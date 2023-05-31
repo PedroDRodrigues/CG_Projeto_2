@@ -45,9 +45,6 @@ function createCamera() {
     camera.lookAt(scene.position);
 }
 
-/////////////////////
-/* CREATE LIGHT(S) */
-/////////////////////
 
 ////////////////////////
 /* CREATE OBJECT3D(S) */
@@ -119,24 +116,6 @@ function createPlane() {
     const material = new THREE.MeshBasicMaterial();
     const plane = new THREE.Mesh(geometry, material);
     scene.add(plane);
-}
-
-//////////////////////
-/* CHECK COLLISIONS */
-//////////////////////
-
-function checkCollisions() {
-    'use strict';
-
-}
-
-///////////////////////
-/* HANDLE COLLISIONS */
-///////////////////////
-
-function handleCollisions() {
-    'use strict';
-
 }
 
 ////////////

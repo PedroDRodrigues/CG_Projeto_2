@@ -1,5 +1,7 @@
 /* global THREE, requestAnimationFrame, console */
 
+import { generateFieldTexture, generateSkyTexture } from  './text/textures.js'
+
 //////////////////////
 /* GLOBAL VARIABLES */
 //////////////////////
@@ -11,8 +13,6 @@ var stereo;
 var keysPressed = {};
 
 var materials = [];
-
-let textureType = 'field'; // Define o tipo de textura inicial como campo floral
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -110,24 +110,6 @@ function toggleLighting() {
     lightingEnabled = !lightingEnabled;
 }
 
-//////////////////////
-/* CHECK COLLISIONS */
-//////////////////////
-
-function checkCollisions() {
-    'use strict';
-
-}
-
-///////////////////////
-/* HANDLE COLLISIONS */
-///////////////////////
-
-function handleCollisions() {
-    'use strict';
-
-}
-
 ////////////
 /* UPDATE */
 ////////////
@@ -153,6 +135,7 @@ function update() {
 /////////////
 /* DISPLAY */
 /////////////
+
 function render() {
     'use strict';
 
