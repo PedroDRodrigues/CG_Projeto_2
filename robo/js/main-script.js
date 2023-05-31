@@ -24,7 +24,6 @@ function createScene(){
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xFFFFFF);
 
-    createPlane();
     createSkyDome();
 }
 
@@ -67,74 +66,6 @@ function createLights() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
-
-function generateFieldTexture() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 512;
-  const context = canvas.getContext('2d');
-  
-  // Preenche o fundo com verde claro
-  context.fillStyle = '#cde7c0';
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // Gera centenas de pequenos círculos brancos, amarelos, lilases e azuis-claros
-  const colors = ['#ffffff', '#ffff00', '#c8a2c8', '#add8e6'];
-  for (let i = 0; i < 500; i++) {
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height;
-    const radius = Math.random() * 5;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    
-    context.beginPath();
-    context.arc(x, y, radius, 0, 2 * Math.PI);
-    context.fillStyle = color;
-    context.fill();
-  }
-  
-  const aux = new THREE.CanvasTexture(canvas);
-  aux.wrapS = THREE.RepeatWrapping;
-  aux.wrapT = THREE.RepeatWrapping;
-  return aux;
-}
-
-function generateSkyTexture() {
-  const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 512;
-  const context = canvas.getContext('2d');
-  
-  // Cria um degradê linear de azul-escuro para violeta-escuro como fundo
-  const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
-  gradient.addColorStop(0, '#00008b');
-  gradient.addColorStop(1, '#8a2be2');
-  context.fillStyle = gradient;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // Gera centenas de pequenos círculos brancos para representar as estrelas
-  context.fillStyle = '#ffffff';
-  for (let i = 0; i < 500; i++) {
-    const x = Math.random() * canvas.width;
-    const y = Math.random() * canvas.height;
-    const radius = Math.random() * 2;
-    
-    context.beginPath();
-    context.arc(x, y, radius, 0, 2 * Math.PI);
-    context.fill();
-  }
-  
-  const aux = new THREE.CanvasTexture(canvas);
-  aux.wrapS = THREE.RepeatWrapping;
-  aux.wrapT = THREE.RepeatWrapping;
-  return aux;
-}
-
-function createPlane() {
-    const geometry = new THREE.PlaneGeometry(1000, 500);
-    const material = new THREE.MeshBasicMaterial();
-    const plane = new THREE.Mesh(geometry, material);
-    scene.add(plane);
-}
 
 function createSkyDome() {
     const geometry = new THREE.SphereGeometry(1000, 32, 32);
@@ -219,26 +150,6 @@ function update() {
     }
 }
 
-function updateTexture() {
-    'use strict';
-
-    let texture;
-  
-    if (textureType === 'field') {
-        texture = generateFieldTexture();
-    } else if (textureType === 'sky') {
-        texture = generateSkyTexture();
-    }
-    
-    // Atualiza o material da cena com a nova textura
-    const material = new THREE.MeshBasicMaterial({ map: texture });
-    scene.children.forEach(child => {
-        if (child instanceof THREE.Mesh) {
-        child.material = material;
-        }
-    });
-}
-
 /////////////
 /* DISPLAY */
 /////////////
@@ -309,12 +220,8 @@ function onKeyDown(e) {
     keysPressed[e.keyCode] = true;
     switch (e.keyCode) {
         case 49: //1
-            textureType = 'field';
-            updateTexture();
             break; 
         case 50: //2
-            textureType = 'sky';
-            updateTexture();
             break;
     }
 }
