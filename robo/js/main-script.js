@@ -8,6 +8,8 @@ var camera, scene, renderer;
 
 var keysPressed = {};
 
+var materials = [];
+
 let textureType = 'field'; // Define o tipo de textura inicial como campo floral
 
 /////////////////////
@@ -21,6 +23,7 @@ function createScene(){
     scene.background = new THREE.Color(0xFFFFFF);
 
     createPlane();
+    createSkyDome();
 }
 
 //////////////////////
@@ -45,6 +48,16 @@ function createCamera() {
 /* CREATE LIGHT(S) */
 /////////////////////
 
+function createLights() {
+    'use strict';
+
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    directionalLight.position.set(0, 1, 0);
+    scene.add(directionalLight);
+}
 
 ////////////////////////
 /* CREATE OBJECT3D(S) */
@@ -112,6 +125,49 @@ function createPlane() {
     scene.add(plane);
 }
 
+function createSkyDome() {
+    const geometry = new THREE.SphereGeometry(1000, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ map: generateSkyTexture() });
+    const skyDome = new THREE.Mesh(geometry, material);
+    skyDome.material.side = THREE.BackSide;
+    scene.add(skyDome);
+}
+
+function createMaterials() {
+    materials.lambert = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+    materials.phong = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    materials.toon = new THREE.MeshToonMaterial({ color: 0x0000ff });
+}
+
+function applyMaterials() {
+    const geometry = new THREE.BoxGeometry(10, 10, 10);
+
+    const meshLambert = new THREE.Mesh(geometry, materials.lambert);
+    meshLambert.position.x = -20;
+    scene.add(meshLambert);
+
+    const meshPhong = new THREE.Mesh(geometry, materials.phong);
+    scene.add(meshPhong);
+
+    const meshToon = new THREE.Mesh(geometry, materials.toon);
+    meshToon.position.x = 20;
+    scene.add(meshToon);
+}
+
+function switchShadingType() {
+    if (shadingType === 'Gouraud') {
+        shadingType = 'Phong';
+    } else if (shadingType === 'Phong') {
+        shadingType = 'Cartoon';
+    } else if (shadingType === 'Cartoon') {
+        shadingType = 'Gouraud';
+    }
+}
+
+function toggleLighting() {
+    lightingEnabled = !lightingEnabled;
+}
+
 //////////////////////
 /* CHECK COLLISIONS */
 //////////////////////
@@ -135,6 +191,24 @@ function handleCollisions() {
 ////////////
 
 function update() {
+    'use strict';
+
+    if (keysPressed['q'] || keysPressed['w'] || keysPressed['e']) {
+        switchShadingType();
+    }
+    if (keysPressed['r']) {
+        toggleLighting();
+    }
+
+    for (const materialName in materials) {
+        const material = materials[materialName];
+        material.flatShading = (shadingType === 'Gouraud');
+        material.needsUpdate = true;
+        material.lights = lightingEnabled;
+    }
+}
+
+function updateTexture() {
     'use strict';
 
     let texture;
@@ -178,6 +252,7 @@ function init() {
 
     createScene();
     createCamera();
+    createLights();
 
     render();
 
@@ -193,6 +268,7 @@ function init() {
 function animate() {
     'use strict';
 
+    update();
     requestAnimationFrame(animate);
     render();
 }
@@ -205,6 +281,11 @@ function onResize() {
     'use strict';
 
     renderer.setSize(window.innerWidth, window.innerHeight);
+
+    if (window.innerHeight > 0 && window.innerWidth > 0) {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+    }
 }
 
 ///////////////////////
@@ -218,11 +299,11 @@ function onKeyDown(e) {
     switch (e.keyCode) {
         case 49: //1
             textureType = 'field';
-            update();
+            updateTexture();
             break; 
         case 50: //2
             textureType = 'sky';
-            update();
+            updateTexture();
             break;
     }
 }
