@@ -2,7 +2,8 @@
 
 //////////////////////
 /* GLOBAL VARIABLES */
-//////////////////////
+////////////////////////
+
 
 var camera, scene, renderer;
 
@@ -112,6 +113,7 @@ function generateSkyTexture() {
 
 }
 
+
 function createPlane() {
     const geometry = new THREE.PlaneGeometry(1000, 500);
     const material = new THREE.MeshBasicMaterial();
@@ -175,6 +177,7 @@ function init() {
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
 }
+
 
 /////////////////////
 /* ANIMATION CYCLE */

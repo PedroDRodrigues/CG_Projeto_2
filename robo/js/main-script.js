@@ -1,6 +1,6 @@
 /* global THREE, requestAnimationFrame, console */
 
-import { generateFieldTexture, generateSkyTexture } from  './text/textures.js';
+import { generateFieldTexture, generateSkyTexture } from  '../js/textures.js';
 
 //////////////////////
 /* GLOBAL VARIABLES */
@@ -25,6 +25,10 @@ var delta_time;
 var mountains, moon, skyDome;
 
 var ovni = new THREE.Object3D();
+
+var sobreiro = new THREE.Object3D();
+
+var grupo_de_sobreiros = new THREE.Object3D();
 
 var objects = [];
 
@@ -177,6 +181,40 @@ function createSkyDome() {
     scene.add(skyDome);
 }
 
+function createSobreiro(){
+
+    var troncoPrincipalGeometry = new THREE.CylinderGeometry(1, 1, 5, 32);
+    var troncoPrincipalMaterial = new THREE.MeshBasicMaterial({ color: 0xD2691E });
+    var troncoPrincipal = new THREE.Mesh(troncoPrincipalGeometry, troncoPrincipalMaterial);
+    sobreiro.add(troncoPrincipal);
+
+    // Criação do ramo secundário
+    var ramoSecundarioGeometry = new THREE.CylinderGeometry(0.5, 0.5, 3, 32);
+    var ramoSecundarioMaterial = new THREE.MeshBasicMaterial({ color: 0xD2691E });
+    var ramoSecundario = new THREE.Mesh(ramoSecundarioGeometry, ramoSecundarioMaterial);
+    ramoSecundario.position.set(1, 2, 0);
+    ramoSecundario.rotation.z = Math.PI / 4;
+    sobreiro.add(ramoSecundario);
+
+    // Criação da copa
+    var copaGeometry = new THREE.SphereGeometry(2, 32, 32);
+    var copaMaterial = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    var copa = new THREE.Mesh(copaGeometry, copaMaterial);
+    copa.position.set(0, 5, 0);
+    sobreiro.add(copa);
+
+}
+
+function createSobreiros(){
+    for (let i = 0; i < 5; i++) {
+        const sobreiro_replica = sobreiro.clone();
+        sobreiro_replica.position.set(i, i, 0);
+        grupo_de_sobreiros.add(sobreiro_replica);
+    }
+
+    
+
+}
 function createMaterials() {
     'use strict'
 
@@ -252,12 +290,15 @@ function init() {
     createScene();
     createCamera();
     createLights();
+    createSobreiros();
 
     render();
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
+    
+    animate();
 }
 
 /////////////////////
