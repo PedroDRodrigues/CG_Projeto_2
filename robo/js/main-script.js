@@ -8,11 +8,44 @@ import { generateFieldTexture, generateSkyTexture } from  './text/textures.js'
 
 var camera, scene, renderer;
 
+var geometry, material, mesh;
+
 var stereo;
+
+var lightCalc = true;
+
+var clock = new THREE.Clock(false);
+
+clock.start();
+
+var delta_time;
+
+//objects
+
+var mountains, moon, skyDome;
+
+var ovni = new THREE.Object3D();
+
+var objects = [];
+
+//textures
+
+var texture;
+
+var mountainsTexture;
 
 var keysPressed = {};
 
 var materials = [];
+
+
+var ambientLight;
+
+var directionalLight = true; 
+
+
+var bool_Camera_1 = true;
+
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -25,16 +58,24 @@ function createScene(){
     scene.background = new THREE.Color(0xFFFFFF);
 
     createSkyDome();
+    createMountains();
+    createMoon();
+    createOvni();
 }
 
 //////////////////////
 /* CREATE CAMERA(S) */
 //////////////////////
 
-function createCamera() {
+function createStereoCamera() {
     'use strict';
 
-    //Camara inicial
+    stereo = new THREE.StereoCamera();
+}
+
+function createFixedPerspectiveCamera() {
+    'use strict';
+
     camera = new THREE.PerspectiveCamera(75,
         window.innerWidth / window.innerHeight,
         0.1,
@@ -43,9 +84,16 @@ function createCamera() {
     camera.position.y = 0;
     camera.position.z = 325;
     camera.lookAt(scene.position);
+}
+
+function createCamera() {
+    'use strict';
+
+    //Camara inicial
+    createFixedPerspectiveCamera();
 
     //Camara stereo
-    stereo = new THREE.StereoCamera();
+    createStereoCamera();
 }
 
 /////////////////////
@@ -55,10 +103,10 @@ function createCamera() {
 function createLights() {
     'use strict';
 
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
     directionalLight.position.set(0, 1, 0);
     scene.add(directionalLight);
 }
@@ -67,69 +115,129 @@ function createLights() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
+function createOvni() {
+    'use strict';
+
+    const body = new THREE.Mesh(
+        new THREE.SphereGeometry(10, 32, 32),
+        new THREE.MeshBasicMaterial({ color: 0xffff00, emissive: 0xffff00 })
+    );
+
+    materials.push(body.material);
+    ovni.add(body);
+
+    //cockpit e um cilindro achatado na parte de baixo do ovni
+    
+    
+    
+    const cockpit = new THREE.Mesh(
+        new THREE.CylinderGeometry(0, 10, 20, 32),
+        new THREE.MeshBasicMaterial({ color: 0xffff00, emissive: 0xffff00 })
+    );
+
+
+    //falta acabar este que e o 7
+}
+
+function createMoon() {
+    'use strict';
+
+    geometry = new THREE.SphereGeometry(10, 32, 32);
+    material = new THREE.MeshBasicMaterial({ color: 0xffff00, emissive: 0xffff00 });
+    moon = new THREE.Mesh(geometry, material);
+    moon.position.set(0, 100, 0);
+
+    scene.add(moon);
+
+}
+
+function createMountains() {
+    "use strict";
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(5, 5);
+  
+    geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
+    material = mountainsTexture[2];
+  
+    mountains = new THREE.Mesh(geometry, material);
+    //floor.translateY(-34);
+    //floor.rotateX(Math.PI / 2);
+    scene.add(mountains);
+  
+    objects.push(mountains);
+
+  }  
+
 function createSkyDome() {
-    const geometry = new THREE.SphereGeometry(1000, 32, 32);
-    const material = new THREE.MeshBasicMaterial({ map: generateSkyTexture() });
-    const skyDome = new THREE.Mesh(geometry, material);
-    skyDome.material.side = THREE.BackSide;
+    geometry = new THREE.SphereGeometry(1000, 32, 32);
+    material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), side: THREE.BackSide });
+    skyDome = new THREE.Mesh(geometry, material);
+
     scene.add(skyDome);
 }
 
 function createMaterials() {
-    materials.lambert = new THREE.MeshLambertMaterial({ color: 0xff0000 });
-    materials.phong = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
-    materials.toon = new THREE.MeshToonMaterial({ color: 0x0000ff });
+    'use strict'
+
+    texture = new THREE.TextureLoader().load(`./textures/heighmap.png`);
+    mountainsTexture = new Array(4);
+    mountainsTexture[0] = new THREE.MeshBasicMaterial({ color: 0xff0000, map: texture });
+    mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, map: texture });
+    mountainsTexture[2] = new THREE.MeshPhongMaterial({ color: 0xff0000, map: texture });
+    mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture });
 }
 
-function applyMaterials() {
-    const geometry = new THREE.BoxGeometry(10, 10, 10);
+/////////////
+/* UPDATE  */
+/////////////
 
-    const meshLambert = new THREE.Mesh(geometry, materials.lambert);
-    meshLambert.position.x = -20;
-    scene.add(meshLambert);
+function updateShading() {
+    'use strict';
 
-    const meshPhong = new THREE.Mesh(geometry, materials.phong);
-    scene.add(meshPhong);
-
-    const meshToon = new THREE.Mesh(geometry, materials.toon);
-    meshToon.position.x = 20;
-    scene.add(meshToon);
-}
-
-function switchShadingType() {
-    if (shadingType === 'Gouraud') {
-        shadingType = 'Phong';
-    } else if (shadingType === 'Phong') {
-        shadingType = 'Cartoon';
-    } else if (shadingType === 'Cartoon') {
-        shadingType = 'Gouraud';
+    if (lightCalc) {
+        if (changeShadowType) {
+            box.material = boxmat[1];
+            step1.material = step1mat[1];
+            step2.material = step2mat[1];
+            floor.material = floormat[1];
+            figure1.material = origamimat[1];
+            figure2.material = origamimat[1];
+            figure3.material = origamimat[1];
+        } else {
+            box.material = boxmat[2];
+            step1.material = step1mat[2];
+            step2.material = step2mat[2];
+            floor.material = floormat[2];
+            figure1.material = origamimat[2];
+            figure2.material = origamimat[2];
+            figure3.material = origamimat[2];
+        }
+    } else {
+            box.material = boxmat[0];
+            step1.material = step1mat[0];
+            step2.material = step2mat[0];
+            floor.material = floormat[0];
+            figure1.material = origamimat[0];
+            figure2.material = origamimat[0];
+            figure3.material = origamimat[0];
     }
 }
-
-function toggleLighting() {
-    lightingEnabled = !lightingEnabled;
-}
-
-////////////
-/* UPDATE */
-////////////
 
 function update() {
     'use strict';
 
-    if (keysPressed['q'] || keysPressed['w'] || keysPressed['e']) {
-        switchShadingType();
-    }
-    if (keysPressed['r']) {
-        toggleLighting();
-    }
+    let delta_time = clock.getDelta();
+    let ovni_speed = 100;
 
-    for (const materialName in materials) {
-        const material = materials[materialName];
-        material.flatShading = (shadingType === 'Gouraud');
-        material.needsUpdate = true;
-        material.lights = lightingEnabled;
-    }
+    var diff = new THREE.Vector3();
+    if (keysPressed[37]) diff.x--; // left
+    if (keysPressed[39]) diff.x++; // right
+    if (keysPressed[38]) diff.z++; // up
+    if (keysPressed[40]) diff.z--; // down
+    if (diff.x || diff.z)
+        reboque.position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
+
 }
 
 /////////////
@@ -155,6 +263,7 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    createMaterials();
     createScene();
     createCamera();
     createLights();
@@ -173,6 +282,20 @@ function init() {
 function animate() {
     'use strict';
 
+    if (bool_Camera_1) {
+        camera = camera_1;
+    }
+    else {
+        camera = camera_2;
+    }
+
+    if (directionalLight) {
+        directionalLight.visible = true;
+    }
+    else {
+        directionalLight.visible = false;
+    }
+
     update();
     requestAnimationFrame(animate);
     render();
@@ -181,6 +304,7 @@ function animate() {
 ////////////////////////////
 /* RESIZE WINDOW CALLBACK */
 ////////////////////////////
+
 
 function onResize() { 
     'use strict';
@@ -203,9 +327,32 @@ function onKeyDown(e) {
     keysPressed[e.keyCode] = true;
     switch (e.keyCode) {
         case 49: //1
+            bool_Camera_1 = !bool_Camera_1;
             break; 
-        case 50: //2
+        //q 
+        case 81 || 113:
+            shadingType = 'Gouraud';
+            updateShading();
             break;
+        //w
+        case 87 || 119:
+            shadingType = 'Phong';
+            updateShading();
+            break;
+        //e
+        case 69 || 101:
+            shadingType = 'Cartoon';
+            updateShading();
+            break;
+        //r
+        case 82 || 114:
+            lightCalc = !lightCalc;
+            break;
+        //d
+        case 68 || 100:
+            directionalLight = !directionalLight;
+            break;
+        
     }
 }
 
