@@ -1,6 +1,6 @@
 /* global THREE, requestAnimationFrame, console */
 
-import { generateFieldTexture, generateSkyTexture } from  './text/textures.js'
+import { generateFieldTexture, generateSkyTexture } from  './text/textures.js';
 
 //////////////////////
 /* GLOBAL VARIABLES */
@@ -196,31 +196,16 @@ function updateShading() {
     'use strict';
 
     if (lightCalc) {
-        if (changeShadowType) {
-            box.material = boxmat[1];
-            step1.material = step1mat[1];
-            step2.material = step2mat[1];
-            floor.material = floormat[1];
-            figure1.material = origamimat[1];
-            figure2.material = origamimat[1];
-            figure3.material = origamimat[1];
-        } else {
-            box.material = boxmat[2];
-            step1.material = step1mat[2];
-            step2.material = step2mat[2];
-            floor.material = floormat[2];
-            figure1.material = origamimat[2];
-            figure2.material = origamimat[2];
-            figure3.material = origamimat[2];
+        if (shadingType == 'Lambert') {
+            mountains.material = mountainsTexture[1];
+        } else if (shadingType == 'Phong') {
+            mountains.material = mountainsTexture[2];
+        }
+        else {
+            mountains.material = mountainsTexture[3];
         }
     } else {
-            box.material = boxmat[0];
-            step1.material = step1mat[0];
-            step2.material = step2mat[0];
-            floor.material = floormat[0];
-            figure1.material = origamimat[0];
-            figure2.material = origamimat[0];
-            figure3.material = origamimat[0];
+        mountains.material = mountainsTexture[0];
     }
 }
 

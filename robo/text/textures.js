@@ -80,7 +80,7 @@ function generateFieldTexture() {
 
 }
 
-export function generateSkyTexture() {
+function generateSkyTexture() {
   const canvas = document.createElement('canvas');
   canvas.width = 512;
   canvas.height = 512;
@@ -109,7 +109,7 @@ export function generateSkyTexture() {
   aux.wrapS = THREE.RepeatWrapping;
   aux.wrapT = THREE.RepeatWrapping;
   return aux;
-  
+
 }
 
 function createPlane() {
