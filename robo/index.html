@@ -4,13 +4,15 @@
         <meta charset=”utf-8”>
         <title>@Projeto CG 22/23@</title>
         <link rel="stylesheet" href="css/style.css">
-        <script src="js/three.js"></script>
+        <script src="js/three.module.js" type="module"></script>
         <script src="js/VRButton.js"></script>
-        <script src="js/textures.js"></script>
-        <script src="js/main-script.js" type="module"></script>
+        <script src="js/textures.js" type="module"></script>
+        <script src="js/main-script.js" type="module"></script> 
     </head>
     <body>      
-        <script>
+        <script type="module">
+            import { init } from './js/main-script.js';
+
             init();
         </script>
     </body>

@@ -1,5 +1,7 @@
 /* global THREE, requestAnimationFrame, console */
 
+import * as THREE from '../js/three.module.js';
+import { generateFieldTexture, generateSkyTexture } from '../js/textures.js';
 
 //////////////////////
 /* GLOBAL VARIABLES */
@@ -85,7 +87,7 @@ function createFixedPerspectiveCamera() {
         1000);
     camera.position.x = 0;
     camera.position.y = 0;
-    camera.position.z = 325;
+    camera.position.z = 35;
     camera.lookAt(scene.position);
 }
 
@@ -110,7 +112,7 @@ function createLights() {
     scene.add(ambientLight);
 
     directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
-    directionalLight.position.set(0, 1, 0);
+    directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 }
 
@@ -137,7 +139,7 @@ function createOvni() {
         new THREE.CylinderGeometry(0, 10, 20, 32),
         new THREE.MeshBasicMaterial({ color: 0xffff00, emissive: 0xffff00 })
     );
-    ovni.add(cockpit);
+
 
     //falta acabar este que e o 7
 }
@@ -158,14 +160,14 @@ function createMountains() {
     "use strict";
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    texture.repeat.set(5, 5);
+    texture.repeat.set(1, 1);
   
     geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
     material = mountainsTexture[2];
   
     mountains = new THREE.Mesh(geometry, material);
+    mountains.rotation.x = -Math.PI / 2;
     //floor.translateY(-34);
-    //floor.rotateX(Math.PI / 2);
     scene.add(mountains);
   
     objects.push(mountains);
@@ -220,9 +222,9 @@ function createMaterials() {
     texture = new THREE.TextureLoader().load(`./textures/heighmap.png`);
     mountainsTexture = new Array(4);
     mountainsTexture[0] = new THREE.MeshBasicMaterial({ color: 0xff0000, map: texture });
-    mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, map: texture });
-    mountainsTexture[2] = new THREE.MeshPhongMaterial({ color: 0xff0000, map: texture });
-    mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture });
+    mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
+    mountainsTexture[2] = new THREE.MeshPhongMaterial({  color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
+    mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
 }
 
 /////////////
@@ -296,7 +298,7 @@ function init() {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
-
+    
     animate();
 }
 
@@ -312,13 +314,6 @@ function animate() {
     }
     else {
         camera = camera_2;
-    }
-
-    if (directionalLight) {
-        directionalLight.visible = true;
-    }
-    else {
-        directionalLight.visible = false;
     }
 
     update();
@@ -356,7 +351,7 @@ function onKeyDown(e) {
             break; 
         //q 
         case 81 || 113:
-            shadingType = 'Gouraud';
+            shadingType = 'Lambert';
             updateShading();
             break;
         //w
@@ -375,7 +370,7 @@ function onKeyDown(e) {
             break;
         //d
         case 68 || 100:
-            directionalLight = !directionalLight;
+            directionalLight.visible = !directionalLight.visible;
             break;
         
     }
@@ -391,3 +386,5 @@ function onKeyUp(e){
     // Remove the released key from the keysPressed object
     delete keysPressed[e.keyCode];
 }
+
+export { init }

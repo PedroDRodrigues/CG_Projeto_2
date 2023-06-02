@@ -1,5 +1,7 @@
 /* global THREE, requestAnimationFrame, console */
 
+import * as THREE from '../js/three.module.js';
+
 //////////////////////
 /* GLOBAL VARIABLES */
 ////////////////////////
@@ -235,3 +237,5 @@ function onKeyUp(e){
     // Remove the released key from the keysPressed object
     delete keysPressed[e.keyCode];
 }
+
+export { generateFieldTexture, generateSkyTexture };
