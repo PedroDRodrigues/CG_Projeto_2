@@ -86,7 +86,7 @@ function createStereoCamera() {
 function createFixedPerspectiveCamera() {
     'use strict';
 
-    camera_1 = new THREE.PerspectiveCamera(75,
+    camera_1 = new THREE.PerspectiveCamera(125,
         window.innerWidth / window.innerHeight,
         0.1,
         1000);
@@ -134,18 +134,15 @@ function createLights() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-function createSkyDome() {
-    geometry = new THREE.SphereGeometry(100, 32, 32);
-    material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), wireframe: true });
-    skyDome = new THREE.Mesh(geometry, material);
+function createMoon() {
+    geometry = new THREE.SphereGeometry(20, 20, 20);
+    material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    moon = new THREE.Mesh(geometry, material);
 
-    scene.add(skyDome);
-    skyDome.position.x = 10;
-    skyDome.position.y = 10;
-    skyDome.position.z = 10;
-
-
-    objects.push(skyDome);
+    moon.position.x = 10;
+    moon.position.y = 50;
+    moon.position.z = 10;
+    scene.add(moon);
 }
 
 function createOvni() {
@@ -158,7 +155,7 @@ function createOvni() {
 
     //cockpit e um cilindro achatado na parte de baixo do ovni
     
-    geometry = new THREE.CylinderGeometry(0, 5, 5, 32);
+    geometry = new THREE.CylinderGeometry(10, 5, 5, 32);
     material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
     var cockpit = new THREE.Mesh(cockpit, material);
     cockpit.position.set(0, 0, 0);
@@ -167,14 +164,15 @@ function createOvni() {
     //falta acabar este que e o 7
 }
 
-function createMoon() {
+function createSkyDome() {
     'use strict';
 
-    geometry = new THREE.SphereGeometry(10, 32, 32);
-    material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), wireframe: true });
-    moon = new THREE.Mesh(geometry, material);
-    moon.position.set(0, 40, 0);
-    scene.add(moon);
+    geometry = new THREE.SphereGeometry(50, 50, 50);
+    material = skyDomeTexture[0];
+    material.wireframe = true;
+    skyDome = new THREE.Mesh(geometry, material);
+    skyDome.position.set(0, 0, 0);
+    scene.add(skyDome);
 }
 
 function createMountains() {
@@ -184,14 +182,12 @@ function createMountains() {
     texture.repeat.set(1, 1);
   
     geometry = new THREE.PlaneGeometry(200, 100, 20, 20);
-    material = mountainsTexture[2];
+    material = mountainsTexture[0];
   
     mountains = new THREE.Mesh(geometry, material);
     mountains.position.set(0, 0, 0);
     mountains.rotation.x = -Math.PI / 2;
     scene.add(mountains);
-  
-
 }
 
 function createSobreiro() {
@@ -239,10 +235,10 @@ function createMaterials() {
     mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
 
     skyDomeTexture = new Array(4);
-    skyDomeTexture[0] = new THREE.MeshBasicMaterial({ color: 0x3d3d3d, map: texture });
-    skyDomeTexture[1] = new THREE.MeshLambertMaterial({ color: 0x3d3d3d, map: texture, displacementMap: texture, displacementScale : 20 });
-    skyDomeTexture[2] = new THREE.MeshPhongMaterial({  color: 0x3d3d3d, map: texture, displacementMap: texture, displacementScale : 20 });
-    skyDomeTexture[3] = new THREE.MeshToonMaterial({ color: 0x3d3d3d, map: texture, displacementMap: texture, displacementScale : 20 });
+    skyDomeTexture[0] = new THREE.MeshBasicMaterial({ color: 0x3d3d3d, map: generateSkyTexture() });
+    skyDomeTexture[1] = new THREE.MeshLambertMaterial({ color: 0x3d3d3d, map: generateSkyTexture(), displacementMap: generateSkyTexture(), displacementScale : 20 });
+    skyDomeTexture[2] = new THREE.MeshPhongMaterial({  color: 0x3d3d3d, map: generateSkyTexture(), displacementMap: generateSkyTexture(), displacementScale : 20 });
+    skyDomeTexture[3] = new THREE.MeshToonMaterial({ color: 0x3d3d3d, map: generateSkyTexture(), displacementMap: generateSkyTexture(), displacementScale : 20 });
 
 }
 
