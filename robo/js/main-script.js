@@ -7,11 +7,13 @@ import { generateFieldTexture, generateSkyTexture } from '../js/textures.js';
 /* GLOBAL VARIABLES */
 //////////////////////
 
+let textureType = 'field'; // Define o tipo de textura inicial como campo floral
+
 var camera, scene, renderer;
 
-var geometry, material, mesh;
+var camera_1, camera_2;
 
-var stereo;
+var geometry, material, mesh;
 
 var lightCalc = true;
 
@@ -37,7 +39,7 @@ var objects = [];
 
 var texture;
 
-var mountainsTexture;
+var mountainsTexture, moonTexture, skyDomeTexture;
 
 var keysPressed = {};
 
@@ -51,6 +53,7 @@ var directionalLight = true;
 
 var bool_Camera_1 = true;
 
+let shadingType = 'Lambert';
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -62,6 +65,9 @@ function createScene(){
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xFFFFFF);
 
+    scene.add(new THREE.AxesHelper(10));
+
+    createPlane();
     createSkyDome();
     createMountains();
     createMoon();
@@ -75,20 +81,20 @@ function createScene(){
 function createStereoCamera() {
     'use strict';
 
-    stereo = new THREE.StereoCamera();
+    camera_2 = new THREE.StereoCamera();
 }
 
 function createFixedPerspectiveCamera() {
     'use strict';
 
-    camera = new THREE.PerspectiveCamera(75,
+    camera_1 = new THREE.PerspectiveCamera(75,
         window.innerWidth / window.innerHeight,
         0.1,
         1000);
-    camera.position.x = 0;
-    camera.position.y = 0;
-    camera.position.z = 35;
-    camera.lookAt(scene.position);
+    camera_1.position.x = 50;
+    camera_1.position.y = 50;
+    camera_1.position.z = 50;
+    camera_1.lookAt(scene.position);
 }
 
 function createCamera() {
@@ -99,6 +105,15 @@ function createCamera() {
 
     //Camara stereo
     createStereoCamera();
+
+    camera = new THREE.PerspectiveCamera(75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000);
+    camera.position.x = 0;
+    camera.position.y = 0;
+    camera.position.z = 35;
+    camera.lookAt(scene.position);
 }
 
 /////////////////////
@@ -120,12 +135,20 @@ function createLights() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
+function createPlane() {
+    const geometry = new THREE.PlaneGeometry(20, 10, 20, 20);
+    const material = new THREE.MeshBasicMaterial();
+    const plane = new THREE.Mesh(geometry, material);
+    plane.rotation.y = -Math.PI / 3;
+    scene.add(plane);
+}
+
 function createOvni() {
     'use strict';
 
     const body = new THREE.Mesh(
         new THREE.SphereGeometry(10, 32, 32),
-        new THREE.MeshBasicMaterial({ color: 0xffff00, emissive: 0xffff00 })
+        new THREE.MeshBasicMaterial({ color: 0x000000 })
     );
 
     materials.push(body.material);
@@ -137,7 +160,7 @@ function createOvni() {
     
     const cockpit = new THREE.Mesh(
         new THREE.CylinderGeometry(0, 10, 20, 32),
-        new THREE.MeshBasicMaterial({ color: 0xffff00, emissive: 0xffff00 })
+        new THREE.MeshBasicMaterial({ color: 0xffff00})
     );
 
 
@@ -148,7 +171,7 @@ function createMoon() {
     'use strict';
 
     geometry = new THREE.SphereGeometry(10, 32, 32);
-    material = new THREE.MeshBasicMaterial({ color: 0xffff00, emissive: 0xffff00 });
+    material = new THREE.MeshBasicMaterial({ color: 0xffff00});
     moon = new THREE.Mesh(geometry, material);
     moon.position.set(0, 100, 0);
 
@@ -167,7 +190,6 @@ function createMountains() {
   
     mountains = new THREE.Mesh(geometry, material);
     mountains.rotation.x = -Math.PI / 2;
-    //floor.translateY(-34);
     scene.add(mountains);
   
     objects.push(mountains);
@@ -180,9 +202,10 @@ function createSkyDome() {
     skyDome = new THREE.Mesh(geometry, material);
 
     scene.add(skyDome);
+    skyDome.position.y = 0;
 }
 
-function createSobreiro(){
+function createSobreiro() {
 
     var troncoPrincipalGeometry = new THREE.CylinderGeometry(1, 1, 5, 32);
     var troncoPrincipalMaterial = new THREE.MeshBasicMaterial({ color: 0xD2691E });
@@ -219,21 +242,46 @@ function createSobreiros(){
 function createMaterials() {
     'use strict'
 
-    texture = new THREE.TextureLoader().load(`./textures/heighmap.png`);
+    texture = new THREE.TextureLoader().load(`./text/heightmap.png`);
     mountainsTexture = new Array(4);
     mountainsTexture[0] = new THREE.MeshBasicMaterial({ color: 0xff0000, map: texture });
     mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
     mountainsTexture[2] = new THREE.MeshPhongMaterial({  color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
     mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
+
+    skyDomeTexture = new Array(4);
+    skyDomeTexture[0] = new THREE.MeshBasicMaterial({ color: 0xff0000, map: texture });
+    skyDomeTexture[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
+    skyDomeTexture[2] = new THREE.MeshPhongMaterial({  color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
+    skyDomeTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
 }
 
 /////////////
 /* UPDATE  */
 /////////////
 
-function updateShading() {
+function update() {
     'use strict';
 
+    let delta_time = clock.getDelta();
+    let ovni_speed = 100;
+    let texture;
+
+    var diff = new THREE.Vector3();
+    if (keysPressed[37]) diff.x--; // left
+    if (keysPressed[39]) diff.x++; // right
+    if (keysPressed[38]) diff.z++; // up
+    if (keysPressed[40]) diff.z--; // down
+    if (diff.x || diff.z)
+        reboque.position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
+
+  
+    if (textureType === 'field') {
+        texture = generateFieldTexture();
+    } else if (textureType === 'sky') {
+        texture = generateSkyTexture();
+    }
+    
     if (lightCalc) {
         if (shadingType == 'Lambert') {
             mountains.material = mountainsTexture[1];
@@ -246,21 +294,14 @@ function updateShading() {
     } else {
         mountains.material = mountainsTexture[0];
     }
-}
 
-function update() {
-    'use strict';
-
-    let delta_time = clock.getDelta();
-    let ovni_speed = 100;
-
-    var diff = new THREE.Vector3();
-    if (keysPressed[37]) diff.x--; // left
-    if (keysPressed[39]) diff.x++; // right
-    if (keysPressed[38]) diff.z++; // up
-    if (keysPressed[40]) diff.z--; // down
-    if (diff.x || diff.z)
-        reboque.position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
+    // Atualiza o material da cena com a nova textura
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    scene.children.forEach(child => {
+        if (child instanceof THREE.Mesh) {
+        child.material = material;
+        }
+    });
 
 }
 
@@ -347,22 +388,27 @@ function onKeyDown(e) {
     keysPressed[e.keyCode] = true;
     switch (e.keyCode) {
         case 49: //1
-            bool_Camera_1 = !bool_Camera_1;
+            textureType = 'field';
+            update();
             break; 
+        case 50: //2
+            textureType = 'sky';
+            update();
+            break;
         //q 
         case 81 || 113:
             shadingType = 'Lambert';
-            updateShading();
+            update();
             break;
         //w
         case 87 || 119:
             shadingType = 'Phong';
-            updateShading();
+            update();
             break;
         //e
         case 69 || 101:
             shadingType = 'Cartoon';
-            updateShading();
+            update();
             break;
         //r
         case 82 || 114:
@@ -372,7 +418,13 @@ function onKeyDown(e) {
         case 68 || 100:
             directionalLight.visible = !directionalLight.visible;
             break;
-        
+        /*
+         *
+        case 49: //1
+            bool_Camera_1 = !bool_Camera_1;
+            break; 
+         *
+         */
     }
 }
 
