@@ -1,6 +1,5 @@
 /* global THREE, requestAnimationFrame, console */
 
-import { generateFieldTexture, generateSkyTexture } from  '../js/textures.js';
 
 //////////////////////
 /* GLOBAL VARIABLES */
@@ -138,7 +137,7 @@ function createOvni() {
         new THREE.CylinderGeometry(0, 10, 20, 32),
         new THREE.MeshBasicMaterial({ color: 0xffff00, emissive: 0xffff00 })
     );
-
+    ovni.add(cockpit);
 
     //falta acabar este que e o 7
 }
@@ -297,7 +296,7 @@ function init() {
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
-    
+
     animate();
 }
 
