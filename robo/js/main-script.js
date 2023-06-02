@@ -53,7 +53,7 @@ var directionalLight = true;
 
 var bool_Camera_1 = true;
 
-let shadingType = 'Lambert';
+let shadingType;
 
 /////////////////////
 /* CREATE SCENE(S) */
@@ -65,12 +65,11 @@ function createScene(){
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xFFFFFF);
 
-    scene.add(new THREE.AxesHelper(10));
-
-    createPlane();
-    createSkyDome();
-    createMountains();
+    scene.add(new THREE.AxesHelper(100));
+    
     createMoon();
+    createMountains();
+    createSkyDome();
     createOvni();
 }
 
@@ -135,34 +134,35 @@ function createLights() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-function createPlane() {
-    const geometry = new THREE.PlaneGeometry(20, 10, 20, 20);
-    const material = new THREE.MeshBasicMaterial();
-    const plane = new THREE.Mesh(geometry, material);
-    plane.rotation.y = -Math.PI / 3;
-    scene.add(plane);
+function createSkyDome() {
+    geometry = new THREE.SphereGeometry(100, 32, 32);
+    material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), wireframe: true });
+    skyDome = new THREE.Mesh(geometry, material);
+
+    scene.add(skyDome);
+    skyDome.position.x = 10;
+    skyDome.position.y = 10;
+    skyDome.position.z = 10;
+
+
+    objects.push(skyDome);
 }
 
 function createOvni() {
     'use strict';
 
-    const body = new THREE.Mesh(
-        new THREE.SphereGeometry(10, 32, 32),
-        new THREE.MeshBasicMaterial({ color: 0x000000 })
-    );
-
-    materials.push(body.material);
+    geometry = new THREE.SphereGeometry(5, 5, 5);
+    material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const body = new THREE.Mesh(geometry, material);
     ovni.add(body);
 
     //cockpit e um cilindro achatado na parte de baixo do ovni
     
-    
-    
-    const cockpit = new THREE.Mesh(
-        new THREE.CylinderGeometry(0, 10, 20, 32),
-        new THREE.MeshBasicMaterial({ color: 0xffff00})
-    );
-
+    geometry = new THREE.CylinderGeometry(0, 5, 5, 32);
+    material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    var cockpit = new THREE.Mesh(cockpit, material);
+    cockpit.position.set(0, 0, 0);
+    ovni.add(cockpit);
 
     //falta acabar este que e o 7
 }
@@ -171,12 +171,10 @@ function createMoon() {
     'use strict';
 
     geometry = new THREE.SphereGeometry(10, 32, 32);
-    material = new THREE.MeshBasicMaterial({ color: 0xffff00});
+    material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), wireframe: true });
     moon = new THREE.Mesh(geometry, material);
-    moon.position.set(0, 100, 0);
-
+    moon.position.set(0, 40, 0);
     scene.add(moon);
-
 }
 
 function createMountains() {
@@ -185,24 +183,15 @@ function createMountains() {
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(1, 1);
   
-    geometry = new THREE.PlaneGeometry(100, 100, 100, 100);
+    geometry = new THREE.PlaneGeometry(200, 100, 20, 20);
     material = mountainsTexture[2];
   
     mountains = new THREE.Mesh(geometry, material);
+    mountains.position.set(0, 0, 0);
     mountains.rotation.x = -Math.PI / 2;
     scene.add(mountains);
   
-    objects.push(mountains);
 
-  }  
-
-function createSkyDome() {
-    geometry = new THREE.SphereGeometry(1000, 32, 32);
-    material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), side: THREE.BackSide });
-    skyDome = new THREE.Mesh(geometry, material);
-
-    scene.add(skyDome);
-    skyDome.position.y = 0;
 }
 
 function createSobreiro() {
@@ -250,10 +239,11 @@ function createMaterials() {
     mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
 
     skyDomeTexture = new Array(4);
-    skyDomeTexture[0] = new THREE.MeshBasicMaterial({ color: 0xff0000, map: texture });
-    skyDomeTexture[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
-    skyDomeTexture[2] = new THREE.MeshPhongMaterial({  color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
-    skyDomeTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale : 20 });
+    skyDomeTexture[0] = new THREE.MeshBasicMaterial({ color: 0x3d3d3d, map: texture });
+    skyDomeTexture[1] = new THREE.MeshLambertMaterial({ color: 0x3d3d3d, map: texture, displacementMap: texture, displacementScale : 20 });
+    skyDomeTexture[2] = new THREE.MeshPhongMaterial({  color: 0x3d3d3d, map: texture, displacementMap: texture, displacementScale : 20 });
+    skyDomeTexture[3] = new THREE.MeshToonMaterial({ color: 0x3d3d3d, map: texture, displacementMap: texture, displacementScale : 20 });
+
 }
 
 /////////////
@@ -285,23 +275,27 @@ function update() {
     if (lightCalc) {
         if (shadingType == 'Lambert') {
             mountains.material = mountainsTexture[1];
+            skyDome.material = skyDomeTexture[1];
         } else if (shadingType == 'Phong') {
             mountains.material = mountainsTexture[2];
+            skyDome.material = skyDomeTexture[2];
         }
         else {
             mountains.material = mountainsTexture[3];
+            skyDome.material = skyDomeTexture[3];
         }
     } else {
         mountains.material = mountainsTexture[0];
+        skyDome.material = skyDomeTexture[0];
     }
 
     // Atualiza o material da cena com a nova textura
-    const material = new THREE.MeshBasicMaterial({ map: texture });
+    /*const material = new THREE.MeshBasicMaterial({ map: texture });
     scene.children.forEach(child => {
         if (child instanceof THREE.Mesh) {
         child.material = material;
         }
-    });
+    });*/
 
 }
 
