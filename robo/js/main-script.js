@@ -273,8 +273,8 @@ function createOvni() {
         light.position.copy(lightSphere.position);
 
         // Add the light and the sphere to the scene
-        scene.add(light);
-        scene.add(lightSphere);
+        lightSphere.add(light);
+        lightSphere.add(ovni);
 
         // Add the light to the lights array
         luzes.push(light);
@@ -513,8 +513,6 @@ function init() {
     createCamera();
     createLights();
 
-    render();
-
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
     window.addEventListener("resize", onResize);
@@ -568,26 +566,21 @@ function onKeyDown(e) {
     switch (e.keyCode) {
         case 49: //1
             textureType = 'field';
-            update();
             break;
         case 50: //2
             textureType = 'sky';
-            update();
             break;
         //q 
         case 81 || 113:
             shadingType = 'Lambert';
-            update();
             break;
         //w
         case 87 || 119:
             shadingType = 'Phong';
-            update();
             break;
         //e
         case 69 || 101:
             shadingType = 'Cartoon';
-            update();
             break;
         //r
         case 82 || 114:
