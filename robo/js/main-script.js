@@ -398,7 +398,7 @@ function createMaterials() {
     texture = new THREE.TextureLoader().load(`./text/heightmap.png`);
     mountainsTexture = new Array(4);
     mountainsTexture[0] = new THREE.MeshBasicMaterial({  map: generateFieldTexture() });
-    mountainsTexture[1] = new THREE.MeshLambertMaterial({  map: texture, displacementMap: texture, displacementScale: 20 });
+    mountainsTexture[1] = [new THREE.MeshLambertMaterial({  map: [texture, generateFieldTexture], displacementMap: [texture, generateFieldTexture], displacementScale: 20 })];
     mountainsTexture[2] = new THREE.MeshPhongMaterial({  map: texture, displacementMap: texture, displacementScale: 20 });
     mountainsTexture[3] = new THREE.MeshToonMaterial({  map: texture, displacementMap: texture, displacementScale: 20 });
 
