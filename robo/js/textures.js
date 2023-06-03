@@ -14,7 +14,7 @@ function generateFieldTexture() {
   
   // Gera centenas de pequenos círculos brancos, amarelos, lilases e azuis-claros
   const colors = ['#ffffff', '#ffff00', '#c8a2c8', '#add8e6'];
-  for (let i = 0; i < 500; i++) {
+  for (let i = 0; i < 5000; i++) {
     const x = Math.random() * canvas.width;
     const y = Math.random() * canvas.height;
     const radius = Math.random() * 5;

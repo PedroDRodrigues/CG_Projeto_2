@@ -13,15 +13,13 @@ var camera, scene, renderer;
 
 var camera_1, camera_2;
 
-var geometry, material, mesh;
+var geometry, material;
 
 var lightCalc = true;
 
 var clock = new THREE.Clock(false);
 
 clock.start();
-
-var delta_time;
 
 //objects
 
@@ -45,17 +43,13 @@ var mountainsTexture, moonTexture, sobreiroTexture, ovniTexture;
 
 var keysPressed = {};
 
-var materials = [];
-
 const luzes = [];
-
 
 var ambientLight;
 
 var directionalLight = true;
 
 var ovni_lights = false;
-
 
 var bool_Camera_1 = true;
 
@@ -72,7 +66,6 @@ function createScene() {
     scene.background = new THREE.Color(0xFFFFFF);
 
     scene.add(new THREE.AxesHelper(100));
-
 
     createMountains();
     createSkyDome();
@@ -94,7 +87,7 @@ function createStereoCamera() {
 function createFixedPerspectiveCamera() {
     'use strict';
 
-    camera_1 = new THREE.PerspectiveCamera(125,
+    camera_1 = new THREE.PerspectiveCamera(75,
         window.innerWidth / window.innerHeight,
         0.1,
         1000);
@@ -105,15 +98,14 @@ function createFixedPerspectiveCamera() {
     camera_1.lookAt(position);
 
 
-    camera_1 = new THREE.PerspectiveCamera(125,
+    camera_1 = new THREE.PerspectiveCamera(75,
         window.innerWidth / window.innerHeight,
         0.1,
-        1000);
-    camera_1.position.x = 100;
-    camera_1.position.y = 100;
-    camera_1.position.z = 100;
+        5000);
+    camera_1.position.x = 150;
+    camera_1.position.y = 150;
+    camera_1.position.z = 150;
     camera_1.lookAt(scene.position);
-
 
 }
 
@@ -255,8 +247,6 @@ function createOvni() {
     s10.position.set(5, -7, -6);
     luzes_ovni.add(s10);
 
-
-
     ovni.add(luzes_ovni);
 
     for (let i = 0; i < positions.length; i++) {
@@ -306,7 +296,6 @@ function toggleLights(x) {
     ovni_lights = !ovni_lights;
     }
 
-
     // Function to synchronize the positions of the lights with the spheres
 function synchronizeLightPositions() {
     for (let i = 0; i < luzes.length; i++) {
@@ -317,7 +306,6 @@ function synchronizeLightPositions() {
         light.position.copy(sphere.position);
     }
 }
-
 
 function createSobreiro(x, y, z) {
 
@@ -362,7 +350,7 @@ function createMoon() {
     material = new THREE.MeshStandardMaterial({ color: 0xffff00, roughness: 0, metalness: 0, wireframe: true });
     moon = new THREE.Mesh(geometry, material);
     scene.add(moon);
-    moon.position.set(-40, 78, 10);
+    moon.position.set(-40, 150, 10);
 
     objects.push(moon);
 }
@@ -384,7 +372,7 @@ function createMountains() {
     texture.repeat.set(1, 1);
 
     geometry = new THREE.PlaneGeometry(800, 800, 200, 200);
-    material = new THREE.MeshStandardMaterial({ map: generateFieldTexture(), wireframe: true });
+    material = new THREE.MeshStandardMaterial({ color: 0x00ff00, map: generateFieldTexture(), displacementMap:texture, displacementScale: 20 });
 
     mountains = new THREE.Mesh(geometry, material);
     mountains.position.set(0, 0, 0);
@@ -397,10 +385,10 @@ function createMaterials() {
 
     texture = new THREE.TextureLoader().load(`./text/heightmap.png`);
     mountainsTexture = new Array(4);
-    mountainsTexture[0] = new THREE.MeshBasicMaterial({  map: generateFieldTexture() });
-    mountainsTexture[1] = [new THREE.MeshLambertMaterial({  map: [texture, generateFieldTexture], displacementMap: [texture, generateFieldTexture], displacementScale: 20 })];
-    mountainsTexture[2] = new THREE.MeshPhongMaterial({  map: texture, displacementMap: texture, displacementScale: 20 });
-    mountainsTexture[3] = new THREE.MeshToonMaterial({  map: texture, displacementMap: texture, displacementScale: 20 });
+    mountainsTexture[0] = new THREE.MeshStandardMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
+    mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
+    mountainsTexture[2] = new THREE.MeshPhongMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
+    mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
 
     moonTexture = new Array(4);
     moonTexture[0] = new THREE.MeshBasicMaterial({ color: 0xffff00 });
