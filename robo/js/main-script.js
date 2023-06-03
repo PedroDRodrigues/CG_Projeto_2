@@ -71,6 +71,7 @@ function createScene(){
     createMountains();
     createSkyDome();
     createOvni();
+    createSobreiros();
 }
 
 //////////////////////
@@ -125,7 +126,7 @@ function createLights() {
     ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
-    directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    directionalLight = new THREE.DirectionalLight(0xffffff, 2);
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
 }
@@ -134,48 +135,56 @@ function createLights() {
 /* CREATE OBJECT3D(S) */
 ////////////////////////
 
-function createSkyDome() {
-    geometry = new THREE.SphereGeometry(100, 32, 32);
-    material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), wireframe: true });
-    skyDome = new THREE.Mesh(geometry, material);
+function createMoon() {
+    geometry = new THREE.SphereGeometry(3, 32, 32);
+    material = new THREE.MeshStandardMaterial({ color: 0xffff00,  roughness: 0, metalness: 0, wireframe : true });
+    moon = new THREE.Mesh(geometry, material);
+    scene.add(moon);
+    moon.position.set(30, 43, 10);
 
-    scene.add(skyDome);
-    skyDome.position.x = 10;
-    skyDome.position.y = 10;
-    skyDome.position.z = 10;
-
-
-    objects.push(skyDome);
+    objects.push(moon);
 }
+
 
 function createOvni() {
     'use strict';
 
-    geometry = new THREE.SphereGeometry(5, 5, 5);
-    material = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    geometry = new THREE.SphereGeometry(5, 50, 50);
+    material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
     const body = new THREE.Mesh(geometry, material);
+    body.scale.x = 7;
     ovni.add(body);
 
     //cockpit e um cilindro achatado na parte de baixo do ovni
     
-    geometry = new THREE.CylinderGeometry(0, 5, 5, 32);
-    material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
-    var cockpit = new THREE.Mesh(cockpit, material);
-    cockpit.position.set(0, 0, 0);
-    ovni.add(cockpit);
+    //FIXME
+    geometry = new THREE.SphereGeometry(5, 50, 50);
+    material = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true });
+    const body2 = new THREE.Mesh(geometry, material);
+    body.scale.x = 7;
+    ovni.add(body2);
+   
+
+
+    ovni.position.set(0, 45, 30);
+
+    scene.add(ovni);
 
     //falta acabar este que e o 7
 }
 
-function createMoon() {
+function createSkyDome() {
     'use strict';
 
-    geometry = new THREE.SphereGeometry(10, 32, 32);
+    geometry = new THREE.SphereGeometry(100, 1000, 1000, 0, Math.PI * 2, 0, Math.PI / 2);
     material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), wireframe: true });
     moon = new THREE.Mesh(geometry, material);
-    moon.position.set(0, 40, 0);
+    moon.position.set(0, 0, 0);
     scene.add(moon);
 }
+
+
+
 
 function createMountains() {
     "use strict";
@@ -183,8 +192,8 @@ function createMountains() {
     texture.wrapT = THREE.RepeatWrapping;
     texture.repeat.set(1, 1);
   
-    geometry = new THREE.PlaneGeometry(200, 100, 20, 20);
-    material = mountainsTexture[2];
+    geometry = new THREE.PlaneGeometry(400, 200, 20, 20);
+    material = new THREE.MeshStandardMaterial({ map: generateFieldTexture(), wireframe: true });
   
     mountains = new THREE.Mesh(geometry, material);
     mountains.position.set(0, 0, 0);
@@ -194,16 +203,16 @@ function createMountains() {
 
 }
 
-function createSobreiro() {
+function createSobreiro(x, y ,z) {
 
-    var troncoPrincipalGeometry = new THREE.CylinderGeometry(1, 1, 5, 32);
-    var troncoPrincipalMaterial = new THREE.MeshBasicMaterial({ color: 0xD2691E });
+    var troncoPrincipalGeometry = new THREE.CylinderGeometry(1, 1, 6, 32);
+    var troncoPrincipalMaterial = new THREE.MeshStandardMaterial({ color: 0xD2691E, roughness: 0, metalness: 0, wireframe : true });
     var troncoPrincipal = new THREE.Mesh(troncoPrincipalGeometry, troncoPrincipalMaterial);
     sobreiro.add(troncoPrincipal);
 
     // Criação do ramo secundário
-    var ramoSecundarioGeometry = new THREE.CylinderGeometry(0.5, 0.5, 3, 32);
-    var ramoSecundarioMaterial = new THREE.MeshBasicMaterial({ color: 0xD2691E });
+    var ramoSecundarioGeometry = new THREE.CylinderGeometry(0.5, 1, 3, 32);
+    var ramoSecundarioMaterial = new THREE.MeshStandardMaterial({ color: 0xD2691E, roughness: 0, metalness: 0, wireframe : true });
     var ramoSecundario = new THREE.Mesh(ramoSecundarioGeometry, ramoSecundarioMaterial);
     ramoSecundario.position.set(1, 2, 0);
     ramoSecundario.rotation.z = Math.PI / 4;
@@ -211,19 +220,25 @@ function createSobreiro() {
 
     // Criação da copa
     var copaGeometry = new THREE.SphereGeometry(2, 32, 32);
-    var copaMaterial = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    var copaMaterial = new THREE.MeshStandardMaterial({ color: 0x006400, roughness: 0, metalness: 0, wireframe : true });
     var copa = new THREE.Mesh(copaGeometry, copaMaterial);
     copa.position.set(0, 5, 0);
+    copa.scale.x = 2;
+
+    
+    sobreiro.scale.set(2,2,2);
     sobreiro.add(copa);
+    sobreiro.position.set(x, y, z);
+    scene.add(sobreiro);
+
 
 }
 
 function createSobreiros(){
-    for (let i = 0; i < 5; i++) {
-        const sobreiro_replica = sobreiro.clone();
-        sobreiro_replica.position.set(i, i, 0);
-        grupo_de_sobreiros.add(sobreiro_replica);
-    }
+
+   // createSobreiro(0,15,0);
+   // createSobreiro(0,17,0);
+    createSobreiro(0,15,15);
 
     
 
@@ -282,20 +297,14 @@ function update() {
         }
         else {
             mountains.material = mountainsTexture[3];
-            skyDome.material = skyDomeTexture[3];
+         //   skyDome.material = skyDomeTexture[3];
         }
     } else {
         mountains.material = mountainsTexture[0];
         skyDome.material = skyDomeTexture[0];
     }
 
-    // Atualiza o material da cena com a nova textura
-    /*const material = new THREE.MeshBasicMaterial({ map: texture });
-    scene.children.forEach(child => {
-        if (child instanceof THREE.Mesh) {
-        child.material = material;
-        }
-    });*/
+    
 
 }
 
@@ -326,7 +335,6 @@ function init() {
     createScene();
     createCamera();
     createLights();
-    createSobreiros();
 
     render();
 
