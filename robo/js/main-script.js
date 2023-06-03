@@ -41,16 +41,20 @@ var objects = [];
 
 var texture;
 
-var mountainsTexture, moonTexture, skyDomeTexture;
+var mountainsTexture, moonTexture, skyDomeTexture, sobreiroTexture, ovniTexture;
 
 var keysPressed = {};
 
 var materials = [];
 
+const luzes = [];
+
 
 var ambientLight;
 
 var directionalLight = true;
+
+var ovni_lights = false;
 
 
 var bool_Camera_1 = true;
@@ -150,6 +154,19 @@ function createLights() {
 function createOvni() {
     'use strict';
 
+    const positions = [
+        [0, -7, 10],
+        [5, -7, 8],
+        [0, -7, -8],
+        [-5, -7, 8],
+        [-9, -7, -2],
+        [-9, -7, 3],
+        [9, -7, 3],
+        [9, -7, -2],
+        [-5, -7, -6],
+        [5, -7, -6]
+    ];
+
     geometry = new THREE.SphereGeometry(5, 50, 50);
     material = new THREE.MeshBasicMaterial({ color: 0x000000 });
     const body = new THREE.Mesh(geometry, material);
@@ -241,11 +258,66 @@ function createOvni() {
 
 
     ovni.add(luzes_ovni);
+
+    for (let i = 0; i < positions.length; i++) {
+        const position = positions[i];
+
+        // Create a yellow sphere for the light
+        const lightGeometry = new THREE.SphereGeometry(0.8, 50, 50);
+        const lightMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const lightSphere = new THREE.Mesh(lightGeometry, lightMaterial);
+        lightSphere.position.set(position[0], position[1], position[2]);
+
+        // Create a point light source for the sphere
+        const light = new THREE.PointLight(0xffff00, 1, 10);
+        light.position.copy(lightSphere.position);
+
+        // Add the light and the sphere to the scene
+        scene.add(light);
+        scene.add(lightSphere);
+
+        // Add the light to the lights array
+        luzes.push(light);
+    }  
+    
     ovni.position.set(0, 100, 0);
+
+    synchronizeLightPositions();
     scene.add(ovni);
 
     //  ovni.rotation.z = Math.PI / 2;
 }
+
+function toggleLights(x) {
+    // Iterate over the lights array
+    for (let i = 0; i < luzes.length; i++) {
+        const light = luzes[i];
+
+        // Toggle the intensity of the light
+        if (x === false) {
+            light.intensity = 0; // Turn off the light
+        } else {
+            light.intensity = 100000000000; // Turn on the light
+        }
+    }
+
+    // Toggle the lights state
+    synchronizeLightPositions();    
+    ovni_lights = !ovni_lights;
+    }
+
+
+    // Function to synchronize the positions of the lights with the spheres
+function synchronizeLightPositions() {
+    for (let i = 0; i < luzes.length; i++) {
+        const light = luzes[i];
+        const sphere = luzes_ovni.children[i];
+
+        // Update the position of the light to match the position of the sphere
+        light.position.copy(sphere.position);
+    }
+}
+
 
 function createSobreiro(x, y, z) {
 
@@ -336,11 +408,29 @@ function createMaterials() {
     skyDomeTexture[2] = new THREE.MeshPhongMaterial({ color: 0x3d3d3d, map: generateSkyTexture(), displacementMap: generateSkyTexture(), displacementScale: 20 });
     skyDomeTexture[3] = new THREE.MeshToonMaterial({ color: 0x3d3d3d, map: generateSkyTexture(), displacementMap: generateSkyTexture(), displacementScale: 20 });
 
+    moonTexture = new Array(4);
+    moonTexture[0] = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    moonTexture[1] = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+    moonTexture[2] = new THREE.MeshPhongMaterial({ color: 0xffff00 });
+    moonTexture[3] = new THREE.MeshToonMaterial({ color: 0xffff00 });
+
+    ovniTexture = new Array(4);
+    ovniTexture[0] = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+    ovniTexture[1] = new THREE.MeshLambertMaterial({ color: 0x00ffff });
+    ovniTexture[2] = new THREE.MeshPhongMaterial({ color: 0x00ffff });
+    ovniTexture[3] = new THREE.MeshToonMaterial({ color: 0x00ffff });
+
+    sobreiroTexture = new Array(4);
+    sobreiroTexture[0] = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    sobreiroTexture[1] = new THREE.MeshLambertMaterial({ color: 0x006400 });
+    sobreiroTexture[2] = new THREE.MeshPhongMaterial({ color: 0x006400 });
+    sobreiroTexture[3] = new THREE.MeshToonMaterial({ color: 0x006400 });
 }
 
 /////////////
 /* UPDATE  */
 /////////////
+
 
 function update() {
     'use strict';
@@ -368,20 +458,30 @@ function update() {
         if (shadingType == 'Lambert') {
             mountains.material = mountainsTexture[1];
             skyDome.material = skyDomeTexture[1];
+            ovni.material = ovniTexture[1];
+            sobreiro.material = sobreiroTexture[1];
+            moon.material = moonTexture[1];
         } else if (shadingType == 'Phong') {
             mountains.material = mountainsTexture[2];
             skyDome.material = skyDomeTexture[2];
+            ovni.material = ovniTexture[2];
+            sobreiro.material = sobreiroTexture[2];
+            moon.material = moonTexture[2];
         }
         else {
             mountains.material = mountainsTexture[3];
             //skyDome.material = skyDomeTexture[3];
+            ovni.material = ovniTexture[3];
+            sobreiro.material = sobreiroTexture[3];
+            moon.material = moonTexture[3];
         }
     } else {
         mountains.material = mountainsTexture[0];
         skyDome.material = skyDomeTexture[0];
+        ovni.material = ovniTexture[0];
+        sobreiro.material = sobreiroTexture[0];
+        moon.material = moonTexture[0];
     }
-
-
 
 }
 
@@ -496,6 +596,14 @@ function onKeyDown(e) {
         //d
         case 68 || 100:
             directionalLight.visible = !directionalLight.visible;
+            break;
+        //p
+        case 80:
+            toggleLights(true);
+            break;
+        //s
+        case 83:
+            toggleLights(false);
             break;
         /*
          *
