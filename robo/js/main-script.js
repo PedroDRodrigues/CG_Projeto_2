@@ -41,7 +41,7 @@ var objects = [];
 
 var texture;
 
-var mountainsTexture, moonTexture, skyDomeTexture, sobreiroTexture, ovniTexture;
+var mountainsTexture, moonTexture, sobreiroTexture, ovniTexture;
 
 var keysPressed = {};
 
@@ -372,9 +372,9 @@ function createSkyDome() {
 
     geometry = new THREE.SphereGeometry(400, 1000, 1000, 0, Math.PI * 2, 0, Math.PI / 2);
     material = new THREE.MeshBasicMaterial({ map: generateSkyTexture(), wireframe: true });
-    moon = new THREE.Mesh(geometry, material);
-    moon.position.set(0, 0, 0);
-    scene.add(moon);
+    skyDome = new THREE.Mesh(geometry, material);
+    skyDome.position.set(0, 0, 0);
+    scene.add(skyDome);
 }
 
 function createMountains() {
@@ -397,16 +397,10 @@ function createMaterials() {
 
     texture = new THREE.TextureLoader().load(`./text/heightmap.png`);
     mountainsTexture = new Array(4);
-    mountainsTexture[0] = new THREE.MeshBasicMaterial({ color: 0xff0000, map: texture });
-    mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale: 20 });
-    mountainsTexture[2] = new THREE.MeshPhongMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale: 20 });
-    mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0xff0000, map: texture, displacementMap: texture, displacementScale: 20 });
-
-    skyDomeTexture = new Array(4);
-    skyDomeTexture[0] = new THREE.MeshBasicMaterial({ color: 0x3d3d3d, map: generateSkyTexture() });
-    skyDomeTexture[1] = new THREE.MeshLambertMaterial({ color: 0x3d3d3d, map: generateSkyTexture(), displacementMap: generateSkyTexture(), displacementScale: 20 });
-    skyDomeTexture[2] = new THREE.MeshPhongMaterial({ color: 0x3d3d3d, map: generateSkyTexture(), displacementMap: generateSkyTexture(), displacementScale: 20 });
-    skyDomeTexture[3] = new THREE.MeshToonMaterial({ color: 0x3d3d3d, map: generateSkyTexture(), displacementMap: generateSkyTexture(), displacementScale: 20 });
+    mountainsTexture[0] = new THREE.MeshBasicMaterial({  map: generateFieldTexture() });
+    mountainsTexture[1] = new THREE.MeshLambertMaterial({  map: texture, displacementMap: texture, displacementScale: 20 });
+    mountainsTexture[2] = new THREE.MeshPhongMaterial({  map: texture, displacementMap: texture, displacementScale: 20 });
+    mountainsTexture[3] = new THREE.MeshToonMaterial({  map: texture, displacementMap: texture, displacementScale: 20 });
 
     moonTexture = new Array(4);
     moonTexture[0] = new THREE.MeshBasicMaterial({ color: 0xffff00 });
@@ -457,27 +451,23 @@ function update() {
     if (lightCalc) {
         if (shadingType == 'Lambert') {
             mountains.material = mountainsTexture[1];
-            skyDome.material = skyDomeTexture[1];
             ovni.material = ovniTexture[1];
             sobreiro.material = sobreiroTexture[1];
             moon.material = moonTexture[1];
         } else if (shadingType == 'Phong') {
             mountains.material = mountainsTexture[2];
-            skyDome.material = skyDomeTexture[2];
             ovni.material = ovniTexture[2];
             sobreiro.material = sobreiroTexture[2];
             moon.material = moonTexture[2];
         }
         else {
             mountains.material = mountainsTexture[3];
-            //skyDome.material = skyDomeTexture[3];
             ovni.material = ovniTexture[3];
             sobreiro.material = sobreiroTexture[3];
             moon.material = moonTexture[3];
         }
     } else {
         mountains.material = mountainsTexture[0];
-        skyDome.material = skyDomeTexture[0];
         ovni.material = ovniTexture[0];
         sobreiro.material = sobreiroTexture[0];
         moon.material = moonTexture[0];
