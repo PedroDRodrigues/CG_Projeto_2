@@ -33,6 +33,8 @@ var grupo_de_sobreiros = new THREE.Object3D();
 
 var luzes_ovni = new THREE.Object3D();
 
+var holofote_container = new THREE.Object3D();
+
 var objects = [];
 
 //textures
@@ -48,8 +50,6 @@ const luzes = [];
 var ambientLight;
 
 var directionalLight = true;
-
-var ovni_lights = false;
 
 var bool_Camera_1 = true;
 
@@ -170,7 +170,7 @@ function createOvni() {
     material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
     const cockpit = new THREE.Mesh(geometry, material);
     cockpit.scale.x = 3.5;
-    cockpit.position.set(0, 2.5,0);
+    cockpit.position.set(0, 2.5, 0);
     ovni.add(cockpit);
 
     //cockpit e um cilindro achatado na parte de baixo do ovni
@@ -263,49 +263,47 @@ function createOvni() {
         light.position.copy(lightSphere.position);
 
         // Add the light and the sphere to the scene
-        lightSphere.add(light);
-        lightSphere.add(ovni);
+        scene.add(light);
+        scene.add(lightSphere);
 
         // Add the light to the lights array
         luzes.push(light);
-    }  
-    
+    }
+
+    geometry = new THREE.SphereGeometry(2, 50, 50);
+    material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    holofote_container = new THREE.Mesh(geometry, material);
+    holofote_container.position.set(0, -7, 1);
+
+    const holofote = new THREE.SpotLight(0xffffff);
+    holofote.angle = Math.PI / 8;
+    holofote_container.add(holofote);
+    ovni.add(holofote_container);
+
+
     ovni.position.set(0, 100, 0);
 
-    synchronizeLightPositions();
     scene.add(ovni);
 
     //  ovni.rotation.z = Math.PI / 2;
 }
 
 function toggleLights(x) {
-    // Iterate over the lights array
     for (let i = 0; i < luzes.length; i++) {
         const light = luzes[i];
 
-        // Toggle the intensity of the light
         if (x === false) {
-            light.intensity = 0; // Turn off the light
+            light.intensity = 0;
+            holofote_container.children[0].intensity = 0;
         } else {
-            light.intensity = 100000000000; // Turn on the light
+            light.intensity = 1000; // Turn on the light
+            holofote_container.children[0].intensity = 1;
+
         }
     }
 
-    // Toggle the lights state
-    synchronizeLightPositions();    
-    ovni_lights = !ovni_lights;
-    }
-
-    // Function to synchronize the positions of the lights with the spheres
-function synchronizeLightPositions() {
-    for (let i = 0; i < luzes.length; i++) {
-        const light = luzes[i];
-        const sphere = luzes_ovni.children[i];
-
-        // Update the position of the light to match the position of the sphere
-        light.position.copy(sphere.position);
-    }
 }
+
 
 function createSobreiro(x, y, z) {
 
@@ -343,6 +341,16 @@ function createSobreiros() {
     var sobreiro2 = sobreiro.clone();
     sobreiro2.position.set(0, 10, -15);
     scene.add(sobreiro2);
+
+    var sobreiro3 = sobreiro.clone();
+    sobreiro3.position.set(100, 10, -15);
+    sobreiro3.rotation.y = Math.PI / 2;
+    scene.add(sobreiro3);
+
+    var sobreiro4 = sobreiro.clone();
+    sobreiro4.position.set(100, 10, 50);
+    sobreiro4.rotation.y = Math.PI / 3;
+    scene.add(sobreiro4);
 }
 
 function createMoon() {
@@ -372,7 +380,7 @@ function createMountains() {
     texture.repeat.set(1, 1);
 
     geometry = new THREE.PlaneGeometry(800, 800, 200, 200);
-    material = new THREE.MeshStandardMaterial({ color: 0x00ff00, map: generateFieldTexture(), displacementMap:texture, displacementScale: 20 });
+    material = new THREE.MeshStandardMaterial({ color: 0x00ff00, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
 
     mountains = new THREE.Mesh(geometry, material);
     mountains.position.set(0, 0, 0);
@@ -426,8 +434,14 @@ function update() {
     if (keysPressed[39]) diff.x++; // right
     if (keysPressed[38]) diff.z++; // up
     if (keysPressed[40]) diff.z--; // down
+        
     if (diff.x || diff.z)
         ovni.position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
+        for (let i = 0; i < luzes.length; i++) {
+            const light = luzes[i];
+            light.position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
+            holofote_container.children[0].position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
+        }
 
 
     if (textureType === 'field') {
@@ -460,7 +474,7 @@ function update() {
         sobreiro.material = sobreiroTexture[0];
         moon.material = moonTexture[0];
     }
-
+    //  synchronizeLightPositions();
 }
 
 /////////////
@@ -490,6 +504,7 @@ function init() {
     createScene();
     createCamera();
     createLights();
+    toggleLights(false);
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
