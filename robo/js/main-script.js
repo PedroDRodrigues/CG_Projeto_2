@@ -185,6 +185,8 @@ function createHouse() {
 
     geometry = new THREE.BufferGeometry();
 
+
+
     const vertices = new Float32Array([
         0, 0, 0, //0
         0, 25, 0, //1
@@ -241,6 +243,13 @@ function createHouse() {
         9, 10, 11, // Face 9
         13, 15, 17, // Face 10
         12, 16, 18, // Face 11
+        //NOVOS
+        28, 11, 3,
+        28, 33, 11,
+        30, 23, 4,
+        6, 25, 31,
+        27, 32, 10, 
+        31, 32, 24,
         // Top BOX
         12, 13, 14,   // Face 10
         13, 14, 15,   // Face 11
@@ -248,6 +257,17 @@ function createHouse() {
         15, 18, 19,   // Face 13
         16, 17, 18,   // Face 14
         17, 18, 19,   // Face 15
+        // JANELAS
+        20, 21, 22,
+        21, 22, 23,
+        24, 25, 26,
+        25, 26, 27,
+        // PORTAS
+        4, 5, 6,
+        5, 6, 7,
+        // NOVAS 
+        2, 28, 29,
+        20, 29, 30
     ]);
 
     // Set the index attribute of the geometry
@@ -259,6 +279,7 @@ function createHouse() {
 
     house = new THREE.Mesh(geometry, material);
     house.position.set(-45, 50, 0);
+    //house.rotateY(Math.PI / 2);
     scene.add(house);
 
     objects.push(house);
