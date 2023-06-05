@@ -21,13 +21,11 @@ clock.start();
 
 //objects
 
-var mountains, moon, skyDome;
+var mountains, moon, skyDome, house;
 
 var ovni = new THREE.Object3D();
 
 var sobreiro = new THREE.Object3D();
-
-var grupo_de_sobreiros = new THREE.Object3D();
 
 var luzes_ovni = new THREE.Object3D();
 
@@ -70,6 +68,7 @@ function createScene() {
     createMoon();
     createSobreiros();
     createOvni();
+    createHouse();
 }
 
 function createScene1() {
@@ -179,6 +178,91 @@ function createPlane2() {
     material = new THREE.MeshBasicMaterial({ color: 0x90ee90, map: generateSkyTexture()});
     const plane = new THREE.Mesh(geometry, material);
     scene2.add(plane);
+}
+
+function createHouse() {
+    'use strict';
+
+    geometry = new THREE.BufferGeometry();
+
+    const vertices = new Float32Array([
+        0, 0, 0, //0
+        0, 25, 0, //1
+        0, 0, 25, //2
+        0, 25, 25, //3
+        17.5, 0, 25, //4
+        17.5, 20, 25, //5
+        25, 0, 25, //6
+        25, 20, 25, //7
+        50, 0, 0, //8
+        50, 25, 0, //9
+        50, 0, 25, //10
+        50, 25, 25, //11
+        // Top BOX
+        0, 25, -5, //12
+        0, 25, 30, //13
+        0, 35, -5, //14
+        0, 35, 30, //15
+        50, 25, -5, //16
+        50, 25, 30, //17
+        50, 35, -5, //18
+        50, 35, 30, //19
+        // Windows
+        5, 12.5, 25, //20
+        5, 20, 25, //21
+        10, 12.5, 25, //22
+        10, 20, 25, //23
+        35, 12.5, 25, //24
+        35, 20, 25, //25
+        40, 12.5, 25, //26
+        40, 20, 25, //27
+        //aux points
+        0, 20, 25, //28
+        5, 0, 25, //29
+        10, 0, 25, //30
+        35, 0, 25, //31
+        40, 0, 25, //32
+        50, 20, 25, //33
+    ]);
+
+    // Set the positions attribute of the geometry
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+
+    // Define the indices of the faces
+    const indices = new Uint16Array([
+        0, 1, 2,   // Face 0
+        1, 2, 3,   // Face 1
+        1, 9, 16,
+        0, 1, 9,
+        0, 8, 9, 
+        3, 11, 13,
+        11,13,17,
+        8, 9, 10,  // Face 8
+        9, 10, 11, // Face 9
+        13, 15, 17, // Face 10
+        12, 16, 18, // Face 11
+        // Top BOX
+        12, 13, 14,   // Face 10
+        13, 14, 15,   // Face 11
+        14, 15, 18,   // Face 12
+        15, 18, 19,   // Face 13
+        16, 17, 18,   // Face 14
+        17, 18, 19,   // Face 15
+    ]);
+
+    // Set the index attribute of the geometry
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+
+
+    var material = new THREE.MeshBasicMaterial({ color: 0x00FFFF, wireframe: true });
+
+    house = new THREE.Mesh(geometry, material);
+    house.position.set(-45, 50, 0);
+    scene.add(house);
+
+    objects.push(house);
+
 }
 
 function createOvni() {
@@ -615,14 +699,17 @@ function onKeyDown(e) {
         //q 
         case 81 || 113:
             shadingType = 'Lambert';
+            mountains.material.map = generateFieldTexture();
             break;
         //w
         case 87 || 119:
             shadingType = 'Phong';
+            mountains.material.map = generateFieldTexture();
             break;
         //e
         case 69 || 101:
             shadingType = 'Cartoon';
+            mountains.material.map = generateFieldTexture();
             break;
         //r
         case 82 || 114:
