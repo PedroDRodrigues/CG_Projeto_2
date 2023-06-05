@@ -7,9 +7,7 @@ import { generateFieldTexture, generateSkyTexture } from '../js/textures.js';
 /* GLOBAL VARIABLES */
 //////////////////////
 
-let textureType = 'field'; // Define o tipo de textura inicial como campo floral
-
-var camera, scene, renderer;
+var camera, scene, scene1, scene2, actualScene, renderer;
 
 var camera_1, camera_2;
 
@@ -72,6 +70,28 @@ function createScene() {
     createMoon();
     createSobreiros();
     createOvni();
+}
+
+function createScene1() {
+    'use strict';
+
+    scene1 = new THREE.Scene();
+    scene1.background = new THREE.Color(0xFFFFFF);
+
+    scene1.add(new THREE.AxesHelper(100));
+
+    createPlane();
+}
+
+function createScene2() {
+    'use strict';
+
+    scene2 = new THREE.Scene();
+    scene2.background = new THREE.Color(0xFFFFFF);
+
+    scene2.add(new THREE.AxesHelper(100));
+
+    createPlane2();
 }
 
 //////////////////////
@@ -142,6 +162,24 @@ function createLights() {
 ////////////////////////
 /* CREATE OBJECT3D(S) */
 ////////////////////////
+
+function createPlane() {
+    'use strict';
+
+    geometry = new THREE.PlaneGeometry(200, 100, 100, 100);
+    material = new THREE.MeshBasicMaterial({ color: 0x90ee90, map: generateFieldTexture(), wireframe: true});
+    const plane = new THREE.Mesh(geometry, material);
+    scene1.add(plane);
+}
+
+function createPlane2() {
+    'use strict';
+
+    geometry = new THREE.PlaneGeometry(200, 100, 100, 100);
+    material = new THREE.MeshBasicMaterial({ color: 0x90ee90, map: generateSkyTexture()});
+    const plane = new THREE.Mesh(geometry, material);
+    scene2.add(plane);
+}
 
 function createOvni() {
     'use strict';
@@ -279,13 +317,12 @@ function createOvni() {
     holofote.angle = Math.PI / 8;
     holofote_container.add(holofote);
     ovni.add(holofote_container);
+    scene.add( holofote.target );
 
 
     ovni.position.set(0, 100, 0);
 
     scene.add(ovni);
-
-    //  ovni.rotation.z = Math.PI / 2;
 }
 
 function toggleLights(x) {
@@ -393,10 +430,10 @@ function createMaterials() {
 
     texture = new THREE.TextureLoader().load(`./text/heightmap.png`);
     mountainsTexture = new Array(4);
-    mountainsTexture[0] = new THREE.MeshStandardMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
-    mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
-    mountainsTexture[2] = new THREE.MeshPhongMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
-    mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
+    mountainsTexture[0] = new THREE.MeshStandardMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
+    mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
+    mountainsTexture[2] = new THREE.MeshPhongMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
+    mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
 
     moonTexture = new Array(4);
     moonTexture[0] = new THREE.MeshBasicMaterial({ color: 0xffff00 });
@@ -426,7 +463,7 @@ function update() {
     'use strict';
 
     let delta_time = clock.getDelta();
-    let ovni_speed = 100;
+    let speed = 100;
     let texture;
 
     var diff = new THREE.Vector3();
@@ -435,19 +472,13 @@ function update() {
     if (keysPressed[38]) diff.z++; // up
     if (keysPressed[40]) diff.z--; // down
         
-    if (diff.x || diff.z)
-        ovni.position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
+    if (diff.x || diff.z){
+        ovni.position.add(diff.normalize().multiplyScalar(speed * delta_time));
         for (let i = 0; i < luzes.length; i++) {
             const light = luzes[i];
-            light.position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
-            holofote_container.children[0].position.add(diff.normalize().multiplyScalar(ovni_speed * delta_time));
+            light.position.add(diff.normalize().multiplyScalar(speed * delta_time));
         }
-
-
-    if (textureType === 'field') {
-        texture = generateFieldTexture();
-    } else if (textureType === 'sky') {
-        texture = generateSkyTexture();
+        holofote_container.children[0].target.position.set(ovni.position.x, 0, ovni.position.z);
     }
 
     if (lightCalc) {
@@ -484,7 +515,7 @@ function update() {
 function render() {
     'use strict';
 
-    renderer.render(scene, camera);
+    renderer.render(actualScene, camera);
 }
 
 ////////////////////////////////
@@ -502,9 +533,13 @@ function init() {
 
     createMaterials();
     createScene();
+    createScene1();
+    createScene2();
     createCamera();
     createLights();
     toggleLights(false);
+
+    actualScene = scene;
 
     window.addEventListener("keydown", onKeyDown);
     window.addEventListener("keyup", onKeyUp);
@@ -558,10 +593,13 @@ function onKeyDown(e) {
     keysPressed[e.keyCode] = true;
     switch (e.keyCode) {
         case 49: //1
-            textureType = 'field';
+            actualScene = scene1;
             break;
         case 50: //2
-            textureType = 'sky';
+            actualScene = scene2;
+            break;
+        case 51: //3
+            actualScene = scene;
             break;
         //q 
         case 81 || 113:
