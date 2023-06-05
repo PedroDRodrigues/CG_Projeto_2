@@ -374,20 +374,31 @@ function createSobreiro(x, y, z) {
 
 function createSobreiros() {
     // createSobreiro(0,15,0);
-    createSobreiro(0, 10, 15);
+    createSobreiro(0, 20, 15);
     var sobreiro2 = sobreiro.clone();
-    sobreiro2.position.set(0, 10, -15);
+    sobreiro2.position.set(200, 20, -15);
     scene.add(sobreiro2);
 
     var sobreiro3 = sobreiro.clone();
-    sobreiro3.position.set(100, 10, -15);
-    sobreiro3.rotation.y = Math.PI / 2;
+    sobreiro3.position.set(100, 50, -15);
+    sobreiro3.rotation.y = Math.PI / 3;
     scene.add(sobreiro3);
 
     var sobreiro4 = sobreiro.clone();
-    sobreiro4.position.set(100, 10, 50);
+    sobreiro4.position.set(100, 30, 50);
     sobreiro4.rotation.y = Math.PI / 3;
     scene.add(sobreiro4);
+
+    var sobreiro5 = sobreiro.clone();
+    sobreiro5.position.set(-170, 20, -15);
+    sobreiro5.rotation.y = Math.PI / 3;
+    scene.add(sobreiro5);
+
+    var sobreiro6 = sobreiro.clone();
+    sobreiro6.position.set(-170, 20, 200);
+    sobreiro6.rotation.y = Math.PI / 3;
+    scene.add(sobreiro6);
+    
 }
 
 function createMoon() {
