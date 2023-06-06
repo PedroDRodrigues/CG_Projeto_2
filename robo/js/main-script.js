@@ -227,59 +227,90 @@ function createHouse() {
         50, 20, 25, //33
     ]);
 
-    // Set the positions attribute of the geometry
+    // Define the indices of the faces
+    const indices = [
+        // MAIN HOUSE
+        1, 0, 2,        // Face 0
+        1, 2, 3,        // Face 1
+        0, 1, 9,        // Face 2    
+        0, 9, 8,        // Face 3
+        10, 8, 9,       // Face 4
+        9, 11, 10,      // Face 5
+        28, 11, 3,      // Face 6
+        28, 33, 11,     // Face 7
+        30, 4, 23,      // Face 8
+        6, 31, 25,      // Face 9
+        27, 32, 10,     // Face 10
+        31, 32, 24,     // Face 11
+        28, 2, 29,      // Face 12
+        20, 29, 30,     // Face 13
+        32, 26, 24,     // Face 14
+        10, 33, 27,     // Face 15
+        29, 21, 28,     // Face 16
+        30, 22, 20,     // Face 17 
+        4, 5, 23,       // Face 18
+        6, 25, 7,       // Face 19
+
+        // ROOF
+        1, 9, 16,       // Face 20
+        3, 13, 11,      // Face 21
+        11,13,17,       // Face 22
+        15, 13, 17,     // Face 23
+        16, 12, 18,     // Face 24
+        12, 13, 14,     // Face 25
+        14, 13, 15,     // Face 26
+        14, 15, 18,     // Face 27
+        18, 15, 19,     // Face 28
+        17, 16, 18,     // Face 29
+        17, 18, 19,     // Face 30
+        18, 12, 14,     // Face 31
+        15, 17, 19,     // Face 32
+        12, 1, 16,      // Face 33
+
+
+        // WINDOWS
+        21, 20, 22,     // Face 34
+        21, 22, 23,     // Face 35
+        25, 24, 26,     // Face 36
+        25, 26, 27,     // Face 37
+
+        // DOOR
+        5, 4, 6,        // Face 38
+        5, 6, 7,        // Face 39
+    ];
+
     geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
-    // Define the indices of the faces
-    const indices = new Uint16Array([
-        0, 1, 2,   // Face 0
-        1, 2, 3,   // Face 1
-        1, 9, 16,
-        0, 1, 9,
-        0, 8, 9, 
-        3, 11, 13,
-        11,13,17,
-        8, 9, 10,  // Face 8
-        9, 10, 11, // Face 9
-        13, 15, 17, // Face 10
-        12, 16, 18, // Face 11
-        //NOVOS
-        28, 11, 3,
-        28, 33, 11,
-        30, 23, 4,
-        6, 25, 31,
-        27, 32, 10, 
-        31, 32, 24,
-        // Top BOX
-        12, 13, 14,   // Face 10
-        13, 14, 15,   // Face 11
-        14, 15, 18,   // Face 12
-        15, 18, 19,   // Face 13
-        16, 17, 18,   // Face 14
-        17, 18, 19,   // Face 15
-        // JANELAS
-        20, 21, 22,
-        21, 22, 23,
-        24, 25, 26,
-        25, 26, 27,
-        // PORTAS
-        4, 5, 6,
-        5, 6, 7,
-        // NOVAS 
-        2, 28, 29,
-        20, 29, 30
-    ]);
-
     // Set the index attribute of the geometry
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+    geometry.setIndex(indices);
+
+    geometry.computeVertexNormals();
+
+    geometry.clearGroups();
+    geometry.addGroup(0,60,0);
+    geometry.addGroup(60,102,1);
+    geometry.addGroup(102,114,2);
+    geometry.addGroup(114,120,3);
 
 
+    var material = [
+        new THREE.MeshBasicMaterial({
+            color: 0xf5f5dc
+        }),
+        new THREE.MeshBasicMaterial({
+            color: 0xD9D9F3
+        }),
+        new THREE.MeshBasicMaterial({
+            color: 0xff0000
+        }),
+        new THREE.MeshBasicMaterial({
+            color: 0x5C3317
+        })
+    ];
 
-    var material = new THREE.MeshBasicMaterial({ color: 0x00FFFF, wireframe: true });
-
-    house = new THREE.Mesh(geometry, material);
+    house = new THREE.Mesh(geometry,material);
     house.position.set(-45, 50, 0);
-    //house.rotateY(Math.PI / 2);
+    house.rotateY(-Math.PI/2);
     scene.add(house);
 
     objects.push(house);
