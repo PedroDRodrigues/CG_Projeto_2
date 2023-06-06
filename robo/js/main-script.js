@@ -308,6 +308,15 @@ function createHouse() {
         })
     ];
 
+    //
+
+// aqui acho que e suposto esta funcao ser dentro do create materials e ter o update consoante o tipo de material
+
+//para isso basta criares no creaateMaterial e chamar depois no update if lightCalc == true
+
+
+    ///
+
     house = new THREE.Mesh(geometry, material);
     house.position.set(-45, 50, 0);
     scene.add(house);
