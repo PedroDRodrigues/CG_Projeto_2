@@ -308,9 +308,8 @@ function createHouse() {
         })
     ];
 
-    house = new THREE.Mesh(geometry,material);
+    house = new THREE.Mesh(geometry, material);
     house.position.set(-45, 50, 0);
-    house.rotateY(-Math.PI/2);
     scene.add(house);
 
     objects.push(house);
