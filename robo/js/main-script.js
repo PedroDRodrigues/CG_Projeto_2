@@ -9,7 +9,7 @@ import { generateFieldTexture, generateSkyTexture } from '../js/textures.js';
 
 var camera, scene, scene1, scene2, actualScene, renderer;
 
-var camera_1, camera_2;
+var camera_1, camera_2, camera_3;
 
 var geometry, material;
 
@@ -37,7 +37,7 @@ var objects = [];
 
 var texture;
 
-var mountainsTexture, moonTexture, sobreiroTexture, ovniTexture;
+var mountainsTexture, moonTexture, sobreiroTexture, ovniTexture, houseTexture;
 
 var keysPressed = {};
 
@@ -67,8 +67,8 @@ function createScene() {
     createSkyDome();
     createMoon();
     createSobreiros();
-    createOvni();
     createHouse();
+    createOvni();
 }
 
 function createScene1() {
@@ -101,21 +101,19 @@ function createStereoCamera() {
     'use strict';
 
     camera_2 = new THREE.StereoCamera();
+/*
+    const camera_r = camera_2.cameraL;
+    const camera_l = camera_2.cameraR;
+
+    camera_r.position.set(-200, 0, 400);
+    camera_l.position.set(200, 0, 400);
+
+    scene.add(camera_l);
+    scene.add(camera_r);*/
 }
 
 function createFixedPerspectiveCamera() {
     'use strict';
-
-    camera_1 = new THREE.PerspectiveCamera(75,
-        window.innerWidth / window.innerHeight,
-        0.1,
-        1000);
-    camera_1.position.x = 0;
-    camera_1.position.y = -10;
-    camera_1.position.z = 0;
-    var position = new THREE.Vector3(0, 200, 0);
-    camera_1.lookAt(position);
-
 
     camera_1 = new THREE.PerspectiveCamera(75,
         window.innerWidth / window.innerHeight,
@@ -128,6 +126,20 @@ function createFixedPerspectiveCamera() {
 
 }
 
+function createOrtogonalCamera() {
+    'use strict';
+
+    camera_3 = new THREE.PerspectiveCamera(75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000);
+    camera_3.position.x = 50;
+    camera_3.position.y = 50;
+    camera_3.position.z = 400;
+    camera_3.lookAt(scene.position);
+
+}
+
 function createCamera() {
     'use strict';
 
@@ -136,6 +148,8 @@ function createCamera() {
 
     //Camara stereo
     createStereoCamera();
+
+    createOrtogonalCamera();
 
     camera = new THREE.PerspectiveCamera(125,
         window.innerWidth / window.innerHeight,
@@ -293,23 +307,23 @@ function createHouse() {
     geometry.addGroup(114,120,3);
 
 
-    var material = [
-        new THREE.MeshBasicMaterial({
+    material = [
+        new THREE.MeshStandardMaterial({
             color: 0xf5f5dc
         }),
-        new THREE.MeshBasicMaterial({
-            color: 0xD9D9F3
+        new THREE.MeshStandardMaterial({
+            color: 0x008000
         }),
-        new THREE.MeshBasicMaterial({
+        new THREE.MeshStandardMaterial({
             color: 0xff0000
         }),
-        new THREE.MeshBasicMaterial({
+        new THREE.MeshStandardMaterial({
             color: 0x5C3317
         })
     ];
 
     house = new THREE.Mesh(geometry, material);
-    house.position.set(-45, 50, 0);
+    house.position.set(-45, 17, 0);
     scene.add(house);
 
     objects.push(house);
@@ -455,7 +469,7 @@ function createOvni() {
     scene.add( holofote.target );
 
 
-    ovni.position.set(0, 100, 0);
+    ovni.position.set(0, 125, 0);
 
     scene.add(ovni);
 }
@@ -509,13 +523,13 @@ function createSobreiro(x, y, z) {
 
 function createSobreiros() {
     // createSobreiro(0,15,0);
-    createSobreiro(0, 20, 15);
+    createSobreiro(-70, 20, 90);
     var sobreiro2 = sobreiro.clone();
     sobreiro2.position.set(200, 20, -15);
     scene.add(sobreiro2);
 
     var sobreiro3 = sobreiro.clone();
-    sobreiro3.position.set(100, 50, -15);
+    sobreiro3.position.set(100, 20, -15);
     sobreiro3.rotation.y = Math.PI / 3;
     scene.add(sobreiro3);
 
@@ -582,22 +596,88 @@ function createMaterials() {
     mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
 
     moonTexture = new Array(4);
-    moonTexture[0] = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+    moonTexture[0] = new THREE.MeshStandardMaterial({ color: 0xffff00 });
     moonTexture[1] = new THREE.MeshLambertMaterial({ color: 0xffff00 });
     moonTexture[2] = new THREE.MeshPhongMaterial({ color: 0xffff00 });
     moonTexture[3] = new THREE.MeshToonMaterial({ color: 0xffff00 });
 
     ovniTexture = new Array(4);
-    ovniTexture[0] = new THREE.MeshBasicMaterial({ color: 0x00ffff });
+    ovniTexture[0] = new THREE.MeshStandardMaterial({ color: 0x00ffff });
     ovniTexture[1] = new THREE.MeshLambertMaterial({ color: 0x00ffff });
     ovniTexture[2] = new THREE.MeshPhongMaterial({ color: 0x00ffff });
     ovniTexture[3] = new THREE.MeshToonMaterial({ color: 0x00ffff });
 
     sobreiroTexture = new Array(4);
-    sobreiroTexture[0] = new THREE.MeshBasicMaterial({ color: 0x006400 });
+    sobreiroTexture[0] = new THREE.MeshStandardMaterial({ color: 0x006400 });
     sobreiroTexture[1] = new THREE.MeshLambertMaterial({ color: 0x006400 });
     sobreiroTexture[2] = new THREE.MeshPhongMaterial({ color: 0x006400 });
     sobreiroTexture[3] = new THREE.MeshToonMaterial({ color: 0x006400 });
+
+    var material_b = [
+        new THREE.MeshStandardMaterial({
+            color: 0xf5f5dc
+        }),
+        new THREE.MeshStandardMaterial({
+            color: 0x008000
+        }),
+        new THREE.MeshStandardMaterial({
+            color: 0xff0000
+        }),
+        new THREE.MeshStandardMaterial({
+            color: 0x5C3317
+        })
+    ];
+
+    var material_l = [
+        new THREE.MeshLambertMaterial({
+            color: 0xf5f5dc
+        }),
+        new THREE.MeshLambertMaterial({
+            color: 0x008000
+        }),
+        new THREE.MeshLambertMaterial({
+            color: 0xff0000
+        }),
+        new THREE.MeshLambertMaterial({
+            color: 0x5C3317
+        })
+    ];
+
+    var material_p = [
+        new THREE.MeshPhongMaterial({
+            color: 0xf5f5dc
+        }),
+        new THREE.MeshPhongMaterial({
+            color: 0x008000
+        }),
+        new THREE.MeshPhongMaterial({
+            color: 0xff0000
+        }),
+        new THREE.MeshPhongMaterial({
+            color: 0x5C3317
+        })
+    ];
+
+    var material_t = [
+        new THREE.MeshToonMaterial({
+            color: 0xf5f5dc
+        }),
+        new THREE.MeshToonMaterial({
+            color: 0x008000
+        }),
+        new THREE.MeshToonMaterial({
+            color: 0xff0000
+        }),
+        new THREE.MeshToonMaterial({
+            color: 0x5C3317
+        })
+    ];
+
+    houseTexture = new Array(4);
+    houseTexture[0] = material_b;
+    houseTexture[1] = material_l;
+    houseTexture[2] = material_p;
+    houseTexture[3] = material_t;
 }
 
 /////////////
@@ -633,23 +713,27 @@ function update() {
             ovni.material = ovniTexture[1];
             sobreiro.material = sobreiroTexture[1];
             moon.material = moonTexture[1];
+            house.material = houseTexture[1];
         } else if (shadingType == 'Phong') {
             mountains.material = mountainsTexture[2];
             ovni.material = ovniTexture[2];
             sobreiro.material = sobreiroTexture[2];
             moon.material = moonTexture[2];
+            house.material = houseTexture[2];
         }
         else {
             mountains.material = mountainsTexture[3];
             ovni.material = ovniTexture[3];
             sobreiro.material = sobreiroTexture[3];
             moon.material = moonTexture[3];
+            house.material = houseTexture[3];
         }
     } else {
         mountains.material = mountainsTexture[0];
         ovni.material = ovniTexture[0];
         sobreiro.material = sobreiroTexture[0];
         moon.material = moonTexture[0];
+        house.material = houseTexture[0];
     }
     //  synchronizeLightPositions();
 }
@@ -677,6 +761,12 @@ function init() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
+    document.body.appendChild(VRButton.createButton(renderer));
+    renderer.xr.enabled = true;
+    renderer.setAnimationLoop(function () {
+        renderer.render(scene, camera);
+    });
+
     createMaterials();
     createScene();
     createScene1();
@@ -701,11 +791,12 @@ function init() {
 function animate() {
     'use strict';
 
+    //case 9
     if (bool_Camera_1) {
         camera = camera_1;
     }
     else {
-        camera = camera_2;
+        camera = camera_3;
     }
 
     update();
@@ -747,6 +838,8 @@ function onKeyDown(e) {
         case 51: //3
             actualScene = scene;
             break;
+        case 57: //9
+            bool_Camera_1 = !bool_Camera_1;
         //q 
         case 81 || 113:
             shadingType = 'Lambert';
@@ -778,13 +871,6 @@ function onKeyDown(e) {
         case 83:
             toggleLights(false);
             break;
-        /*
-         *
-        case 49: //1
-            bool_Camera_1 = !bool_Camera_1;
-            break; 
-         *
-         */
     }
 }
 
