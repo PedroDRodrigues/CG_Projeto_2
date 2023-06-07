@@ -97,21 +97,6 @@ function createScene2() {
 /* CREATE CAMERA(S) */
 //////////////////////
 
-function createStereoCamera() {
-    'use strict';
-
-    camera_2 = new THREE.StereoCamera();
-
-    const camera_r = camera_2.cameraL;
-    const camera_l = camera_2.cameraR;
-
-    camera_r.position.set(-200,200 , 400);
-    camera_l.position.set(200, 200, 400);
-
-    scene.add(camera_l);
-    scene.add(camera_r);
-}
-
 function createFixedPerspectiveCamera() {
     'use strict';
 
@@ -145,9 +130,6 @@ function createCamera() {
 
     //Camara inicial
     createFixedPerspectiveCamera();
-
-    //Camara stereo
-    createStereoCamera();
 
     createOrtogonalCamera();
 
@@ -586,7 +568,7 @@ function createMountains() {
     texture.repeat.set(1, 1);
 
     geometry = new THREE.PlaneGeometry(800, 800, 200, 200);
-    material = new THREE.MeshStandardMaterial({ color: 0x00ff00, map: generateFieldTexture(), displacementMap: texture, displacementScale: 20 });
+    material = new THREE.MeshStandardMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
 
     mountains = new THREE.Mesh(geometry, material);
     mountains.position.set(0, 0, 0);
@@ -598,11 +580,6 @@ function createMaterials() {
     'use strict'
 
     texture = new THREE.TextureLoader().load(`./text/heightmap.png`);
-    mountainsTexture = new Array(4);
-    mountainsTexture[0] = new THREE.MeshStandardMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
-    mountainsTexture[1] = new THREE.MeshLambertMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
-    mountainsTexture[2] = new THREE.MeshPhongMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
-    mountainsTexture[3] = new THREE.MeshToonMaterial({ color: 0x90ee90, map: generateFieldTexture(), displacementMap: texture, displacementScale: 100 });
 
     moonTexture = new Array(4);
     moonTexture[0] = new THREE.MeshStandardMaterial({ color: 0xffff00 });
@@ -718,27 +695,23 @@ function update() {
 
     if (lightCalc) {
         if (shadingType == 'Lambert') {
-            mountains.material = mountainsTexture[1];
             ovni.material = ovniTexture[1];
             sobreiro.material = sobreiroTexture[1];
             moon.material = moonTexture[1];
             house.material = houseTexture[1];
         } else if (shadingType == 'Phong') {
-            mountains.material = mountainsTexture[2];
             ovni.material = ovniTexture[2];
             sobreiro.material = sobreiroTexture[2];
             moon.material = moonTexture[2];
             house.material = houseTexture[2];
         }
         else {
-            mountains.material = mountainsTexture[3];
             ovni.material = ovniTexture[3];
             sobreiro.material = sobreiroTexture[3];
             moon.material = moonTexture[3];
             house.material = houseTexture[3];
         }
     } else {
-        mountains.material = mountainsTexture[0];
         ovni.material = ovniTexture[0];
         sobreiro.material = sobreiroTexture[0];
         moon.material = moonTexture[0];
