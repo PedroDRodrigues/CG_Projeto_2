@@ -101,15 +101,15 @@ function createStereoCamera() {
     'use strict';
 
     camera_2 = new THREE.StereoCamera();
-/*
+
     const camera_r = camera_2.cameraL;
     const camera_l = camera_2.cameraR;
 
-    camera_r.position.set(-200, 0, 400);
-    camera_l.position.set(200, 0, 400);
+    camera_r.position.set(-200,200 , 400);
+    camera_l.position.set(200, 200, 400);
 
     scene.add(camera_l);
-    scene.add(camera_r);*/
+    scene.add(camera_r);
 }
 
 function createFixedPerspectiveCamera() {
