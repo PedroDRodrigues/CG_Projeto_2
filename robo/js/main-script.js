@@ -43,6 +43,8 @@ var keysPressed = {};
 
 const luzes = [];
 
+const lightSphere = new THREE.Object3D();
+
 var ambientLight;
 
 var directionalLight = true;
@@ -119,8 +121,8 @@ function createOrtogonalCamera() {
         0.1,
         1000);
     camera_2.position.x = 0;
-    camera_2.position.y = 0;
-    camera_2.position.z = 250;
+    camera_2.position.y = 300;
+    camera_2.position.z = 0;
     camera_2.lookAt(scene.position);
 
 }
@@ -414,13 +416,16 @@ function createOvni() {
 
         // Create a yellow sphere for the light
         const lightGeometry = new THREE.SphereGeometry(0.8, 50, 50);
-        const lightMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const lightMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const lightSphere = new THREE.Mesh(lightGeometry, lightMaterial);
-        lightSphere.position.set(position[0], position[1], position[2]);
+        lightSphere.position.set(position[0] - 25, -53, position[2]);
+        console.log(lightSphere.position);
+        lightSphere.visible = false;
 
         // Create a point light source for the sphere
-        const light = new THREE.PointLight(0xffff00, 1, 10);
+        const light = new THREE.PointLight(0xffff00, 1,20);
         light.position.copy(lightSphere.position);
+
 
         // Add the light and the sphere to the scene
         scene.add(light);
@@ -438,6 +443,7 @@ function createOvni() {
     const holofote = new THREE.SpotLight(0xffffff);
     holofote.angle = Math.PI / 8;
     holofote_container.add(holofote);
+    holofote_container.children[0].target.position.set(-31.5, 0, 0);
     ovni.add(holofote_container);
     scene.add( holofote.target );
 
